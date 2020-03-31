@@ -1,5 +1,26 @@
 spring:
   application:
     name: rpalace
+  security:
+    oauth2:
+      client:
+        registration:
+          reddit:
+            client-id: ${RPALACE_CLIENT_ID}
+            client-secret: ${RPALACE_CLIENT_SECRET}
+            client-authentication-method: basic
+            authorization-grant-type: authorization_code
+            redirect-uri: http://localhost:8090/redirect
+            scope: history, save, read, mysubreddits, identity
+            client-name: rpalace-client
+        provider:
+          reddit:
+            authorization-uri: https://www.reddit.com/api/v1/authorize
+            token-uri: https://www.reddit.com/api/v1/access_token
+  datasource:
+    url: jdbc:postgresql://localhost:5432/postgres
+    username: ${RPALACE_DB_USER}
+    password: ${RPALACE_DB_PASSWORD}
+    driver-class-name: org.postgresql.Driver
 server:
   port: 8090
