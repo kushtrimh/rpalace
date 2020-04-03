@@ -21,9 +21,10 @@ public class OAuth2Interceptor implements HandlerInterceptor {
     @Override
     public boolean preHandle(HttpServletRequest request,
         HttpServletResponse response, Object handler) throws Exception {
-        HttpRequest httpRequest = (HttpRequest) request;
-        oAuth2TokenService.getToken().ifPresent(token ->
-                httpRequest.getHeaders().add(HttpHeaders.AUTHORIZATION, "Bearer " + token));
+        if (request instanceof HttpRequest httpRequest) {
+            oAuth2TokenService.getToken().ifPresent(token ->
+                    httpRequest.getHeaders().add(HttpHeaders.AUTHORIZATION, "Bearer " + token));
+        }
         return true;
     }
 }

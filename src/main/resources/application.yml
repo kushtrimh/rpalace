@@ -3,6 +3,8 @@ spring:
     name: rpalace
   security:
     oauth2:
+      resource:
+        filter-order: 3
       client:
         registration:
           reddit:
@@ -10,7 +12,7 @@ spring:
             client-secret: ${RPALACE_CLIENT_SECRET}
             client-authentication-method: basic
             authorization-grant-type: authorization_code
-            redirect-uri: http://localhost:8090/redirect
+            redirect-uri: http://localhost:8090/login/oauth2/callback/reddit
             scope: history, save, read, mysubreddits, identity
             client-name: rpalace-client
         provider:
