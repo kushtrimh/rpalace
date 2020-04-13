@@ -12,17 +12,30 @@ spring:
             client-secret: ${RPALACE_CLIENT_SECRET}
             client-authentication-method: basic
             authorization-grant-type: authorization_code
-            redirect-uri: http://localhost:8090/login/oauth2/callback/reddit
+            redirect-uri: http://localhost:8090/oauth/callback
             scope: history, save, read, mysubreddits, identity
             client-name: rpalace-client
         provider:
           reddit:
-            authorization-uri: https://www.reddit.com/api/v1/authorize
+            authorization-uri: https://www.reddit.com/api/v1/authorize?duration=permanent
             token-uri: https://www.reddit.com/api/v1/access_token
+            user-info-authentication-method: header
+            user-info-user: https://oauth.reddit.com/api/v1/me
+            user-name-attribute: name
   datasource:
-    url: jdbc:postgresql://localhost:5432/postgres
+    url: jdbc:postgresql://localhost:5432/rpalace_db?currentSchema=rpalace_schema
     username: ${RPALACE_DB_USER}
     password: ${RPALACE_DB_PASSWORD}
     driver-class-name: org.postgresql.Driver
+  jpa:
+    properties:
+      hibernate:
+        default_schema: rpalace_schema
+    hibernate:
+      ddl-auto: update
+  #show-sql: true
 server:
   port: 8090
+rpalace:
+  user-agent: 'web:rpalace:v.0.0.1-SNAPSHOT'
+  registration-id: reddit
