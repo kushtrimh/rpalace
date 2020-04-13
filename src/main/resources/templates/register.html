@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>RPalace | Register</title>
+</head>
+<body>
+    <form action="#" th:action="@{/register}" th:object="${user}" method="POST">
+        <div>
+            <label for="email">Email:</label>
+            <input type="text" th:field="*{email}" />
+            <span th:if="${#fields.hasErrors('email')}" th:errors="*{email}"></span>
+        </div>
+        <div>
+            <label for="password">Password:</label>
+            <input type="password" th:field="*{password}" />
+            <span th:if="${#fields.hasErrors('password')}" th:errors="*{password}"></span>
+        </div>
+
+        <button type="submit">Register</button>
+    </form>
+</body>
+</html>
