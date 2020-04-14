@@ -5,6 +5,7 @@ import org.kushtrimhajrizi.rpalace.exception.UserAlreadyHasToken;
 import org.kushtrimhajrizi.rpalace.exception.UserDoesNotExist;
 import org.kushtrimhajrizi.rpalace.oauth.OAuth2TokenService;
 
+import org.kushtrimhajrizi.rpalace.oauth.interceptor.OAuth2RestTemplateInterceptor;
 import org.kushtrimhajrizi.rpalace.service.UserService;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -24,11 +25,14 @@ public class OAuth2Controller {
 
     private final OAuth2TokenService oAuth2TokenService;
     private final UserService userService;
+    private final OAuth2RestTemplateInterceptor restTemplateInterceptor;
 
     public OAuth2Controller(OAuth2TokenService oAuth2TokenService,
-                            UserService userService) {
+                            UserService userService,
+                            OAuth2RestTemplateInterceptor restTemplateInterceptor) {
         this.oAuth2TokenService = oAuth2TokenService;
         this.userService = userService;
+        this.restTemplateInterceptor = restTemplateInterceptor;
     }
 
     @RequestMapping(value = "/oauth", method = {RequestMethod.GET, RequestMethod.POST})
@@ -49,5 +53,4 @@ public class OAuth2Controller {
         }
         return token.orElse("No Token"); // Temporary
     }
-
 }
