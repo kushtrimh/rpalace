@@ -23,10 +23,10 @@ spring:
             user-info-user: https://oauth.reddit.com/api/v1/me
             user-name-attribute: name
   datasource:
-    url: jdbc:postgresql://localhost:5432/rpalace_db?currentSchema=rpalace_schema
+    url: jdbc:mysql://localhost:3306/rpalace_schema
     username: ${RPALACE_DB_USER}
     password: ${RPALACE_DB_PASSWORD}
-    driver-class-name: org.postgresql.Driver
+    driver-class-name: com.mysql.cj.jdbc.Driver
   jpa:
     properties:
       hibernate:
