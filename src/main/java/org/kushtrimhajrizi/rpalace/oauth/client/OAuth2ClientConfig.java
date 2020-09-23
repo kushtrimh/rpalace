@@ -1,4 +1,4 @@
-package org.kushtrimhajrizi.rpalace.security.config;
+package org.kushtrimhajrizi.rpalace.oauth.client;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -32,14 +32,14 @@ import java.util.Base64;
 import java.util.List;
 
 @Configuration
-public class OAuth2Config {
+public class OAuth2ClientConfig {
 
     @Value("${rpalace.user-agent}")
     private String userAgent;
 
     private final ClientRegistrationRepository clientRegistrationRepository;
 
-    public OAuth2Config(ClientRegistrationRepository clientRegistrationRepository) {
+    public OAuth2ClientConfig(ClientRegistrationRepository clientRegistrationRepository) {
         this.clientRegistrationRepository = clientRegistrationRepository;
     }
 

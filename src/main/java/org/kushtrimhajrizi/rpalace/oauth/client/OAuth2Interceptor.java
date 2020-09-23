@@ -1,6 +1,5 @@
-package org.kushtrimhajrizi.rpalace.oauth.interceptor;
+package org.kushtrimhajrizi.rpalace.oauth.client;
 
-import org.kushtrimhajrizi.rpalace.oauth.OAuth2TokenService;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpRequest;
 import org.springframework.stereotype.Component;
@@ -21,7 +20,8 @@ public class OAuth2Interceptor implements HandlerInterceptor {
     @Override
     public boolean preHandle(HttpServletRequest request,
         HttpServletResponse response, Object handler) throws Exception {
-        if (request instanceof HttpRequest httpRequest) {
+        if (request instanceof HttpRequest) {
+            HttpRequest httpRequest = (HttpRequest) request;
             oAuth2TokenService.getToken().ifPresent(token ->
                     httpRequest.getHeaders().add(HttpHeaders.AUTHORIZATION, "Bearer " + token));
         }

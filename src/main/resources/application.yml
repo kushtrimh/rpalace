@@ -8,11 +8,11 @@ spring:
       client:
         registration:
           reddit:
-            client-id: ${RPALACE_CLIENT_ID}
-            client-secret: ${RPALACE_CLIENT_SECRET}
+            client-id: ${RPALACE_REDDIT_CLIENT_ID}
+            client-secret: ${RPALACE_REDDIT_CLIENT_SECRET}
             client-authentication-method: basic
             authorization-grant-type: authorization_code
-            redirect-uri: http://localhost:8090/oauth/callback
+            redirect-uri: ${RPALACE_REDDIT_CLIENT_REDIRECT_URI}
             scope: history, save, read, mysubreddits, identity
             client-name: rpalace-client
         provider:
@@ -23,7 +23,7 @@ spring:
             user-info-user: https://oauth.reddit.com/api/v1/me
             user-name-attribute: name
   datasource:
-    url: jdbc:mysql://localhost:3306/rpalace_schema
+    url: ${RPALACE_DB_URL}
     username: ${RPALACE_DB_USER}
     password: ${RPALACE_DB_PASSWORD}
     driver-class-name: com.mysql.cj.jdbc.Driver
@@ -34,8 +34,15 @@ spring:
     hibernate:
       ddl-auto: update
   #show-sql: true
+logging:
+  level:
+    org:
+      kushtrimhajrizi:
+        rpalace: DEBUG
 server:
   port: 8090
 rpalace:
   user-agent: 'web:rpalace:v.0.0.1-SNAPSHOT'
   registration-id: reddit
+  jwt:
+    secret-file: ${RPALACE_JWT_SECRET}

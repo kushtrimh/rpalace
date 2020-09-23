@@ -1,4 +1,4 @@
-package org.kushtrimhajrizi.rpalace.oauth;
+package org.kushtrimhajrizi.rpalace.oauth.client;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;

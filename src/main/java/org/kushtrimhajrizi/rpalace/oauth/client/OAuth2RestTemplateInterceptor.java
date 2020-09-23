@@ -1,7 +1,6 @@
-package org.kushtrimhajrizi.rpalace.oauth.interceptor;
+package org.kushtrimhajrizi.rpalace.oauth.client;
 
 
-import org.kushtrimhajrizi.rpalace.oauth.OAuth2TokenService;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpRequest;

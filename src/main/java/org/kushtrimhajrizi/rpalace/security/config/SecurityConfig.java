@@ -1,6 +1,5 @@
 package org.kushtrimhajrizi.rpalace.security.config;
 
-import org.kushtrimhajrizi.rpalace.security.PermissionType;
 import org.springframework.context.annotation.Bean;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -25,15 +24,13 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
-        http
+        http.csrf().disable()
             .authorizeRequests(authorize ->
                     authorize
-                    .antMatchers("/login**", "/error**", "/oauth2/**", "/webjars/**", "/register**")
+                    .antMatchers("/register", "/auth/token")
                     .permitAll()
                     .antMatchers("/oauth", "/oauth/**")
-                    .authenticated()
-                    .anyRequest()
-                    .hasAuthority(PermissionType.TOKEN_USER.toString()))
+                    .authenticated())
             .formLogin(login -> login.successForwardUrl("/oauth"))
             .oauth2Client(oauth2Client -> oauth2Client
                 .authorizationCodeGrant(codeGrant ->
