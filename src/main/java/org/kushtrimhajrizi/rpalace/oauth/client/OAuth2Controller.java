@@ -1,24 +1,15 @@
-package org.kushtrimhajrizi.rpalace.oauth.controller;
+package org.kushtrimhajrizi.rpalace.oauth.client;
 
-import org.kushtrimhajrizi.rpalace.entity.DefaultUser;
-import org.kushtrimhajrizi.rpalace.exception.UserAlreadyHasToken;
-import org.kushtrimhajrizi.rpalace.exception.UserDoesNotExist;
-import org.kushtrimhajrizi.rpalace.oauth.OAuth2TokenService;
-
-import org.kushtrimhajrizi.rpalace.oauth.interceptor.OAuth2RestTemplateInterceptor;
-import org.kushtrimhajrizi.rpalace.service.UserService;
+import org.kushtrimhajrizi.rpalace.security.user.UserService;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletResponse;
 import java.net.URI;
-import java.util.Optional;
 
 @RestController
 public class OAuth2Controller {
@@ -40,17 +31,5 @@ public class OAuth2Controller {
         HttpHeaders headers = new HttpHeaders();
         headers.setLocation(URI.create("/oauth2/authorization/reddit"));
         return new ResponseEntity<>(headers, HttpStatus.FOUND);
-    }
-
-
-    @GetMapping("/oauth/callback")
-    public String redirectUri(Authentication authentication) throws UserDoesNotExist, UserAlreadyHasToken {
-        Optional<String> token = oAuth2TokenService.getToken();
-        if (token.isPresent()) {
-            if (authentication.getPrincipal() instanceof DefaultUser defaultUser && defaultUser.getToken() == null) {
-                userService.setToken(defaultUser.getId(), token.get());
-            }
-        }
-        return token.orElse("No Token"); // Temporary
     }
 }

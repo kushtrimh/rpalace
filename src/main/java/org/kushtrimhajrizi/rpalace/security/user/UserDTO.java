@@ -1,4 +1,4 @@
-package org.kushtrimhajrizi.rpalace.dto;
+package org.kushtrimhajrizi.rpalace.security.user;
 
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
