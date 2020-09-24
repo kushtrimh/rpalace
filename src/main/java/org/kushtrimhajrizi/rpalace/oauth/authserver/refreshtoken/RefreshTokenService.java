@@ -7,4 +7,6 @@ public interface RefreshTokenService {
     String createNew(User user);
 
     RefreshToken getActiveRefreshToken(User user) throws RefreshTokenNotFoundException;
+
+    boolean isActiveRefreshToken(String refreshToken) throws RefreshTokenNotFoundException;
 }

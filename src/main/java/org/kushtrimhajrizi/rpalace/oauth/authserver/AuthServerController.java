@@ -3,6 +3,7 @@ package org.kushtrimhajrizi.rpalace.oauth.authserver;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.kushtrimhajrizi.rpalace.exception.AccessTokenException;
+import org.kushtrimhajrizi.rpalace.exception.RefreshTokenNotFoundException;
 import org.kushtrimhajrizi.rpalace.exception.UnauthorizedException;
 import org.kushtrimhajrizi.rpalace.exception.UserDoesNotExistException;
 import org.kushtrimhajrizi.rpalace.oauth.authserver.accesstoken.AccessTokenDTO;
@@ -14,6 +15,7 @@ import org.kushtrimhajrizi.rpalace.security.user.UserDTO;
 import org.kushtrimhajrizi.rpalace.security.user.UserService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -48,5 +50,14 @@ public class AuthServerController {
         String refreshToken = refreshTokenService.createNew(user);
         return new AccessTokenResponse(
                 accessTokenDto.getAccessToken(), refreshToken, accessTokenDto.getExpirationTime().toEpochMilli());
+    }
+
+    @PostMapping("/auth/token/refresh")
+    public AccessTokenResponse refreshToken(@RequestParam("refreshToken") String refreshToken)
+            throws UserDoesNotExistException, AccessTokenException, RefreshTokenNotFoundException {
+        if (refreshTokenService.isActiveRefreshToken(refreshToken)) {
+           // TODO:
+        }
+        return null;
     }
 }
