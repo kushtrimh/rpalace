@@ -5,6 +5,10 @@ import org.apache.logging.log4j.Logger;
 import org.kushtrimhajrizi.rpalace.exception.AccessTokenException;
 import org.kushtrimhajrizi.rpalace.exception.UnauthorizedException;
 import org.kushtrimhajrizi.rpalace.exception.UserDoesNotExistException;
+import org.kushtrimhajrizi.rpalace.oauth.authserver.accesstoken.AccessTokenDTO;
+import org.kushtrimhajrizi.rpalace.oauth.authserver.accesstoken.AccessTokenResponse;
+import org.kushtrimhajrizi.rpalace.oauth.authserver.accesstoken.AccessTokenService;
+import org.kushtrimhajrizi.rpalace.oauth.authserver.refreshtoken.RefreshTokenService;
 import org.kushtrimhajrizi.rpalace.security.user.User;
 import org.kushtrimhajrizi.rpalace.security.user.UserDTO;
 import org.kushtrimhajrizi.rpalace.security.user.UserService;
@@ -19,27 +23,30 @@ public class AuthServerController {
 
     private UserService userService;
     private PasswordEncoder passwordEncoder;
-    private AuthServerService authServerService;
+    private AccessTokenService accessTokenService;
+    private RefreshTokenService refreshTokenService;
 
     public AuthServerController(UserService userService,
                                 PasswordEncoder passwordEncoder,
-                                AuthServerService authServerService) {
+                                AccessTokenService accessTokenService,
+                                RefreshTokenService refreshTokenService) {
         this.userService = userService;
         this.passwordEncoder = passwordEncoder;
-        this.authServerService = authServerService;
+        this.accessTokenService = accessTokenService;
+        this.refreshTokenService = refreshTokenService;
     }
 
     @PostMapping("/auth/token")
-    public AuthTokenResponse getToken(UserDTO userDto)
+    public AccessTokenResponse getToken(UserDTO userDto)
             throws UserDoesNotExistException, AccessTokenException {
-        User user = userService.findByEmail(userDto.getEmail())
+        User user = userService.getByEmail(userDto.getEmail())
                 .orElseThrow(() -> new UserDoesNotExistException("User does not exist"));
         if (!passwordEncoder.matches(userDto.getPassword(), user.getPassword())) {
             throw new UnauthorizedException("Password does not match");
         }
-        AccessTokenDTO accessTokenDto = authServerService.createAccessToken(user);
-        // String refreshToken = authServerService.createRefreshToken();
-        return new AuthTokenResponse(
-                accessTokenDto.getAccessToken(), "", accessTokenDto.getExpirationTime().toEpochMilli());
+        AccessTokenDTO accessTokenDto = accessTokenService.createNew(user);
+        String refreshToken = refreshTokenService.createNew(user);
+        return new AccessTokenResponse(
+                accessTokenDto.getAccessToken(), refreshToken, accessTokenDto.getExpirationTime().toEpochMilli());
     }
 }
