@@ -6,7 +6,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
-import java.time.Instant;
 import java.util.UUID;
 
 @Service
@@ -39,5 +38,13 @@ public class RefreshTokenServiceImpl implements RefreshTokenService {
     public RefreshToken getActiveRefreshToken(User user) throws RefreshTokenNotFoundException {
         return refreshTokenRepository.findByActiveTrueAndUser(user)
                 .orElseThrow(() -> new RefreshTokenNotFoundException("Could not find refresh token"));
+    }
+
+    @Override
+    @Transactional
+    public boolean isActiveRefreshToken(String submittedRefreshToken)
+            throws RefreshTokenNotFoundException {
+        // TODO:
+        return false;
     }
 }

@@ -1,25 +1,33 @@
 package org.kushtrimhajrizi.rpalace.oauth.authserver.accesstoken;
 
-import com.nimbusds.jose.EncryptionMethod;
 import com.nimbusds.jose.JOSEException;
-import com.nimbusds.jose.JWEAlgorithm;
-import com.nimbusds.jose.JWEHeader;
-import com.nimbusds.jose.JWEObject;
-import com.nimbusds.jose.Payload;
-import com.nimbusds.jose.crypto.DirectEncrypter;
+import com.nimbusds.jose.JWSAlgorithm;
+import com.nimbusds.jose.JWSHeader;
+import com.nimbusds.jose.crypto.RSASSASigner;
 import com.nimbusds.jwt.JWTClaimsSet;
+import com.nimbusds.jwt.SignedJWT;
 import org.kushtrimhajrizi.rpalace.exception.AccessTokenException;
+import org.kushtrimhajrizi.rpalace.oauth.JWTClaimParameter;
 import org.kushtrimhajrizi.rpalace.security.user.User;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.security.KeyFactory;
+import java.security.NoSuchAlgorithmException;
+import java.security.PrivateKey;
+import java.security.spec.InvalidKeySpecException;
+import java.security.spec.PKCS8EncodedKeySpec;
+import java.util.Base64;
 import java.util.Calendar;
+import java.util.Collection;
+import java.util.stream.Collectors;
 
 @Service
 public class AccessTokenServiceImpl implements AccessTokenService {
@@ -28,11 +36,14 @@ public class AccessTokenServiceImpl implements AccessTokenService {
 
     @Value("${rpalace.jwt.secret-file}")
     private String jwtSecretFilepath;
-    private byte[] jwtSecret;
+    private PrivateKey privateKey;
 
     @PostConstruct
-    public void init() throws IOException {
-        jwtSecret = Files.readAllBytes(Path.of(jwtSecretFilepath));
+    public void init() throws IOException, InvalidKeySpecException, NoSuchAlgorithmException {
+        String privateKeyData = Files.readString(Path.of(jwtSecretFilepath));
+        byte[] decodedPrivateKey = Base64.getDecoder().decode(privateKeyData);
+        KeyFactory keyFactory = KeyFactory.getInstance("RSA");
+        privateKey = keyFactory.generatePrivate(new PKCS8EncodedKeySpec(decodedPrivateKey));
     }
 
     @Override
@@ -43,19 +54,22 @@ public class AccessTokenServiceImpl implements AccessTokenService {
                 .subject(user.getId())
                 .issueTime(Calendar.getInstance().getTime())
                 .expirationTime(expirationCalendar.getTime())
-                .claim(JWTClaimParameter.AUTHORITIES.getParameterName(), user.getAuthorities())
+                .claim(JWTClaimParameter.AUTHORITIES.getParameterName(), formatAuthorities(user.getAuthorities()))
                 .claim(JWTClaimParameter.EMAIL.getParameterName(), user.getEmail())
                 .build();
-        Payload payload = new Payload(claims.toJSONObject());
-        JWEHeader jweHeader = new JWEHeader(JWEAlgorithm.DIR, EncryptionMethod.A256GCM);
-        JWEObject jweObject = new JWEObject(jweHeader, payload);
+        JWSHeader jwsHeader = new JWSHeader(JWSAlgorithm.RS256);
+        SignedJWT singedJwt = new SignedJWT(jwsHeader, claims);
         try {
-            DirectEncrypter directEncrypter = new DirectEncrypter(jwtSecret);
-            jweObject.encrypt(directEncrypter);
-            return new AccessTokenDTO(jweObject.serialize(), expirationCalendar.toInstant());
+            singedJwt.sign(new RSASSASigner(privateKey));
+            return new AccessTokenDTO(singedJwt.serialize(), expirationCalendar.toInstant());
         } catch (JOSEException e) {
-            logger.error("Could not create direct encrypter", e);
+            logger.error("Could not sign access token", e);
             throw new AccessTokenException("Could not create access token", e);
         }
+    }
+
+    private String formatAuthorities(Collection<? extends GrantedAuthority> authorities) {
+        return String.join(" ", authorities.stream()
+                .map(GrantedAuthority::getAuthority).collect(Collectors.toList()));
     }
 }

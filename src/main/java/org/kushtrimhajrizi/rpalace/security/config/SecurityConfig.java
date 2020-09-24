@@ -9,17 +9,21 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.client.endpoint.OAuth2AccessTokenResponseClient;
 import org.springframework.security.oauth2.client.endpoint.OAuth2AuthorizationCodeGrantRequest;
+import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationConverter;
 
 @EnableWebSecurity
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     private final DefaultUserDetailsService defaultUserDetailsService;
     private final OAuth2AccessTokenResponseClient<OAuth2AuthorizationCodeGrantRequest> oAuth2AccessTokenResponseClient;
+    private final JwtAuthenticationConverter jwtAuthenticationConverter;
 
     public SecurityConfig(DefaultUserDetailsService defaultUserDetailsService,
-                          OAuth2AccessTokenResponseClient<OAuth2AuthorizationCodeGrantRequest> oAuth2AccessTokenResponseClient) {
+                          OAuth2AccessTokenResponseClient<OAuth2AuthorizationCodeGrantRequest> oAuth2AccessTokenResponseClient,
+                          JwtAuthenticationConverter jwtAuthenticationConverter) {
         this.defaultUserDetailsService = defaultUserDetailsService;
         this.oAuth2AccessTokenResponseClient = oAuth2AccessTokenResponseClient;
+        this.jwtAuthenticationConverter = jwtAuthenticationConverter;
     }
 
     @Override
@@ -29,12 +33,14 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                     authorize
                     .antMatchers("/register", "/auth/token")
                     .permitAll()
-                    .antMatchers("/oauth", "/oauth/**")
+                    .anyRequest()
                     .authenticated())
-            .formLogin(login -> login.successForwardUrl("/oauth"))
             .oauth2Client(oauth2Client -> oauth2Client
                 .authorizationCodeGrant(codeGrant ->
-                        codeGrant.accessTokenResponseClient(oAuth2AccessTokenResponseClient)));
+                        codeGrant.accessTokenResponseClient(oAuth2AccessTokenResponseClient)))
+            .oauth2ResourceServer(oauth2 -> oauth2
+                .jwt(jwt -> jwt
+                    .jwtAuthenticationConverter(jwtAuthenticationConverter)));
     }
 
     @Bean

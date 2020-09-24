@@ -7,6 +7,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -14,6 +15,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
+import javax.persistence.Transient;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashSet;
@@ -35,7 +37,8 @@ public class User implements UserDetails {
     private String password;
     @Column
     private boolean enabled;
-    @OneToMany(mappedBy = "user", fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "user", fetch = FetchType.EAGER,
+            cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REMOVE})
     private Set<Authority> authorities = new LinkedHashSet<>();
     @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
     private Set<RefreshToken> refreshTokens = new LinkedHashSet<>();
@@ -122,6 +125,12 @@ public class User implements UserDetails {
 
     public void setRefreshTokens(Set<RefreshToken> refreshTokens) {
         this.refreshTokens = refreshTokens;
+    }
+
+    @Transient
+    public void addAuthority(Authority authority) {
+        authorities.add(authority);
+        authority.setUser(this);
     }
 
     @Override

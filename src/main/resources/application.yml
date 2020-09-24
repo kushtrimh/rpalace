@@ -34,11 +34,6 @@ spring:
     hibernate:
       ddl-auto: update
   #show-sql: true
-logging:
-  level:
-    org:
-      kushtrimhajrizi:
-        rpalace: DEBUG
 server:
   port: 8090
 rpalace:
@@ -46,3 +41,11 @@ rpalace:
   registration-id: reddit
   jwt:
     secret-file: ${RPALACE_JWT_SECRET}
+    pub-file: ${RPALACE_JWT_PUB}
+logging:
+  level:
+    org:
+      kushtrimhajrizi:
+        rpalace: INFO
+      springframework:
+        security: INFO

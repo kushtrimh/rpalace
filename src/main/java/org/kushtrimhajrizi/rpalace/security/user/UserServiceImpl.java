@@ -1,6 +1,8 @@
 package org.kushtrimhajrizi.rpalace.security.user;
 
 import org.kushtrimhajrizi.rpalace.exception.UserAlreadyExistsException;
+import org.kushtrimhajrizi.rpalace.security.authority.Authority;
+import org.kushtrimhajrizi.rpalace.security.authority.DefinedAuthority;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -31,6 +33,7 @@ public class UserServiceImpl implements UserService {
         String encodedPassword = Optional.ofNullable(userDTO.getPassword())
                 .map(passwordEncoder::encode).orElseThrow(() -> new IllegalArgumentException("Password is required"));
         User newUser = User.fromEmailAndPassword(userDTO.getEmail(), encodedPassword);
+        newUser.addAuthority(new Authority(DefinedAuthority.USER));
         userRepository.save(newUser);
     }
 

@@ -20,6 +20,13 @@ public class Authority implements GrantedAuthority {
     @ManyToOne
     public User user;
 
+    public Authority() {
+    }
+
+    public Authority(DefinedAuthority definedAuthority) {
+        this.definedAuthority = definedAuthority;
+    }
+
     public DefinedAuthority getDefinedAuthority() {
         return definedAuthority;
     }
@@ -32,7 +39,7 @@ public class Authority implements GrantedAuthority {
         return user;
     }
 
-    public void setUsers(User user) {
+    public void setUser(User user) {
         this.user = user;
     }
 
@@ -58,6 +65,6 @@ public class Authority implements GrantedAuthority {
 
     @Override
     public String getAuthority() {
-        return definedAuthority.name();
+        return definedAuthority.getAuthorityName();
     }
 }
