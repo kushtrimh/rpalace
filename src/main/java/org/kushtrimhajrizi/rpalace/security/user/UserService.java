@@ -8,9 +8,5 @@ public interface UserService {
 
     void save(UserDTO userDTO) throws UserAlreadyExistsException;
 
-    Optional<User> findByEmail(String email);
-
-/*
-    void setToken(int id, String token) throws UserAlreadyHasToken, UserDoesNotExist;
-*/
+    Optional<User> getByEmail(String email);
 }

@@ -1,6 +1,7 @@
 package org.kushtrimhajrizi.rpalace.security.user;
 
 import org.hibernate.annotations.GenericGenerator;
+import org.kushtrimhajrizi.rpalace.oauth.authserver.refreshtoken.RefreshToken;
 import org.kushtrimhajrizi.rpalace.security.authority.Authority;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.AuthorityUtils;
@@ -32,10 +33,12 @@ public class User implements UserDetails {
     private String email;
     @Column
     private String password;
-    @OneToMany(mappedBy = "user", fetch = FetchType.EAGER)
-    private Set<Authority> authorities = new LinkedHashSet<>();
     @Column
     private boolean enabled;
+    @OneToMany(mappedBy = "user", fetch = FetchType.EAGER)
+    private Set<Authority> authorities = new LinkedHashSet<>();
+    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
+    private Set<RefreshToken> refreshTokens = new LinkedHashSet<>();
 
     public static User fromEmailAndPassword(String email, String password) {
         User user = new User();
@@ -111,6 +114,14 @@ public class User implements UserDetails {
     @Override
     public boolean isEnabled() {
         return enabled;
+    }
+
+    public Set<RefreshToken> getRefreshTokens() {
+        return refreshTokens;
+    }
+
+    public void setRefreshTokens(Set<RefreshToken> refreshTokens) {
+        this.refreshTokens = refreshTokens;
     }
 
     @Override

@@ -1,13 +1,13 @@
-package org.kushtrimhajrizi.rpalace.oauth.authserver;
+package org.kushtrimhajrizi.rpalace.oauth.authserver.accesstoken;
 
 import java.util.Objects;
 
-public class AuthTokenResponse {
+public class AccessTokenResponse {
     private String accessToken;
     private String refreshToken;
     private Long expiresIn;
 
-    public AuthTokenResponse(String accessToken, String refreshToken, Long expiresIn) {
+    public AccessTokenResponse(String accessToken, String refreshToken, Long expiresIn) {
         this.accessToken = accessToken;
         this.refreshToken = refreshToken;
         this.expiresIn = expiresIn;
@@ -41,7 +41,7 @@ public class AuthTokenResponse {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        AuthTokenResponse that = (AuthTokenResponse) o;
+        AccessTokenResponse that = (AccessTokenResponse) o;
         return Objects.equals(accessToken, that.accessToken) &&
                 Objects.equals(expiresIn, that.expiresIn) &&
                 Objects.equals(refreshToken, that.refreshToken);

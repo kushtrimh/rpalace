@@ -1,4 +1,4 @@
-package org.kushtrimhajrizi.rpalace.oauth.authserver;
+package org.kushtrimhajrizi.rpalace.oauth.authserver.accesstoken;
 
 import com.nimbusds.jose.EncryptionMethod;
 import com.nimbusds.jose.JOSEException;
@@ -16,16 +16,15 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
-import javax.transaction.Transactional;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Calendar;
 
 @Service
-public class AuthServerServiceImpl implements AuthServerService {
+public class AccessTokenServiceImpl implements AccessTokenService {
 
-    private static final Logger logger = LoggerFactory.getLogger(AuthServerServiceImpl.class);
+    private static final Logger logger = LoggerFactory.getLogger(AccessTokenServiceImpl.class);
 
     @Value("${rpalace.jwt.secret-file}")
     private String jwtSecretFilepath;
@@ -37,7 +36,7 @@ public class AuthServerServiceImpl implements AuthServerService {
     }
 
     @Override
-    public AccessTokenDTO createAccessToken(User user) throws AccessTokenException {
+    public AccessTokenDTO createNew(User user) throws AccessTokenException {
         Calendar expirationCalendar = Calendar.getInstance();
         expirationCalendar.add(Calendar.DAY_OF_YEAR, 7);
         JWTClaimsSet claims = new JWTClaimsSet.Builder()
@@ -58,11 +57,5 @@ public class AuthServerServiceImpl implements AuthServerService {
             logger.error("Could not create direct encrypter", e);
             throw new AccessTokenException("Could not create access token", e);
         }
-    }
-
-    @Override
-    @Transactional
-    public String createRefreshToken(User user) {
-        return null;
     }
 }

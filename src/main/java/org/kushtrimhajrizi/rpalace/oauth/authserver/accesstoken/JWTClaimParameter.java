@@ -1,4 +1,4 @@
-package org.kushtrimhajrizi.rpalace.oauth.authserver;
+package org.kushtrimhajrizi.rpalace.oauth.authserver.accesstoken;
 
 public enum JWTClaimParameter {
     AUTHORITIES("authorities"),

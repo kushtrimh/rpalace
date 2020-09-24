@@ -1,6 +1,6 @@
 package org.kushtrimhajrizi.rpalace.security.user;
 
-import org.kushtrimhajrizi.rpalace.exception.InvalidUserDataException;
+import org.kushtrimhajrizi.rpalace.exception.ValidationException;
 import org.kushtrimhajrizi.rpalace.exception.UserAlreadyExistsException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -23,7 +23,7 @@ public class UserController {
     public ResponseEntity<Void> registerUser(@Valid UserDTO userDTO, BindingResult bindingResult)
             throws UserAlreadyExistsException {
         if (bindingResult.hasErrors()) {
-            throw new InvalidUserDataException();
+            throw new ValidationException(bindingResult);
         }
         userService.save(userDTO);
         return new ResponseEntity<Void>(HttpStatus.OK);
