@@ -24,7 +24,7 @@ public class IdGenerator implements IdentifierGenerator {
         char[] allowedCharacters = ALLOWED_CHARACTERS.toCharArray();
         int allowedCharactersArrayLength = allowedCharacters.length;
         StringBuilder idBuilder = new StringBuilder();
-        for (int i = 0; i < allowedCharacters.length; i++) {
+        for (int i = 0; i < MAX_ID_LENGTH; i++) {
             idBuilder.append(allowedCharacters[random.nextInt(allowedCharactersArrayLength)]);
         }
         String generatedId = idBuilder.toString();

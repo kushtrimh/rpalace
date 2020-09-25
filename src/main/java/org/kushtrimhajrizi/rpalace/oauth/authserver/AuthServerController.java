@@ -3,12 +3,13 @@ package org.kushtrimhajrizi.rpalace.oauth.authserver;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.kushtrimhajrizi.rpalace.exception.AccessTokenException;
-import org.kushtrimhajrizi.rpalace.exception.RefreshTokenNotFoundException;
+import org.kushtrimhajrizi.rpalace.exception.RefreshTokenException;
 import org.kushtrimhajrizi.rpalace.exception.UnauthorizedException;
 import org.kushtrimhajrizi.rpalace.exception.UserDoesNotExistException;
 import org.kushtrimhajrizi.rpalace.oauth.authserver.accesstoken.AccessTokenDTO;
 import org.kushtrimhajrizi.rpalace.oauth.authserver.accesstoken.AccessTokenResponse;
 import org.kushtrimhajrizi.rpalace.oauth.authserver.accesstoken.AccessTokenService;
+import org.kushtrimhajrizi.rpalace.oauth.authserver.refreshtoken.RefreshToken;
 import org.kushtrimhajrizi.rpalace.oauth.authserver.refreshtoken.RefreshTokenService;
 import org.kushtrimhajrizi.rpalace.security.user.User;
 import org.kushtrimhajrizi.rpalace.security.user.UserDTO;
@@ -40,7 +41,7 @@ public class AuthServerController {
 
     @PostMapping("/auth/token")
     public AccessTokenResponse getToken(UserDTO userDto)
-            throws UserDoesNotExistException, AccessTokenException {
+            throws UserDoesNotExistException, AccessTokenException, RefreshTokenException {
         User user = userService.getByEmail(userDto.getEmail())
                 .orElseThrow(() -> new UserDoesNotExistException("User does not exist"));
         if (!passwordEncoder.matches(userDto.getPassword(), user.getPassword())) {
@@ -53,11 +54,14 @@ public class AuthServerController {
     }
 
     @PostMapping("/auth/token/refresh")
-    public AccessTokenResponse refreshToken(@RequestParam("refreshToken") String refreshToken)
-            throws UserDoesNotExistException, AccessTokenException, RefreshTokenNotFoundException {
-        if (refreshTokenService.isActiveRefreshToken(refreshToken)) {
-           // TODO:
+    public AccessTokenResponse refreshToken(@RequestParam("token") String refreshToken)
+            throws RefreshTokenException, AccessTokenException {
+        RefreshToken token = refreshTokenService.getActiveRefreshToken(refreshToken);
+        if (token.getActive()) {
+            AccessTokenDTO accessTokenDto = accessTokenService.createNew(token.getUser());
+            return new AccessTokenResponse(
+                    accessTokenDto.getAccessToken(), accessTokenDto.getExpirationTime().toEpochMilli());
         }
-        return null;
+        throw new RefreshTokenException("Refresh token is invalid");
     }
 }
