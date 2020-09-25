@@ -1,7 +1,10 @@
 package org.kushtrimhajrizi.rpalace.oauth.authserver.accesstoken;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+
 import java.util.Objects;
 
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class AccessTokenResponse {
     private String accessToken;
     private String refreshToken;
@@ -10,6 +13,11 @@ public class AccessTokenResponse {
     public AccessTokenResponse(String accessToken, String refreshToken, Long expiresIn) {
         this.accessToken = accessToken;
         this.refreshToken = refreshToken;
+        this.expiresIn = expiresIn;
+    }
+
+    public AccessTokenResponse(String accessToken, Long expiresIn) {
+        this.accessToken = accessToken;
         this.expiresIn = expiresIn;
     }
 

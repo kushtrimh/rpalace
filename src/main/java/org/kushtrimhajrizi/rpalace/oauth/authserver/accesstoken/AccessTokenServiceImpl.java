@@ -8,6 +8,7 @@ import com.nimbusds.jwt.JWTClaimsSet;
 import com.nimbusds.jwt.SignedJWT;
 import org.kushtrimhajrizi.rpalace.exception.AccessTokenException;
 import org.kushtrimhajrizi.rpalace.oauth.JWTClaimParameter;
+import org.kushtrimhajrizi.rpalace.oauth.authserver.accesstoken.versioning.AccessTokenVersionService;
 import org.kushtrimhajrizi.rpalace.security.user.User;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -34,6 +35,12 @@ public class AccessTokenServiceImpl implements AccessTokenService {
 
     private static final Logger logger = LoggerFactory.getLogger(AccessTokenServiceImpl.class);
 
+    private AccessTokenVersionService accessTokenVersionService;
+
+    public AccessTokenServiceImpl(AccessTokenVersionService accessTokenVersionService) {
+        this.accessTokenVersionService = accessTokenVersionService;
+    }
+
     @Value("${rpalace.jwt.secret-file}")
     private String jwtSecretFilepath;
     private PrivateKey privateKey;
@@ -48,7 +55,9 @@ public class AccessTokenServiceImpl implements AccessTokenService {
 
     @Override
     public AccessTokenDTO createNew(User user) throws AccessTokenException {
-        Calendar expirationCalendar = Calendar.getInstance();
+        String newVersion = accessTokenVersionService.updateAccessTokenVersion(user);
+        user.getAccessTokenVersion().setVersion(newVersion);
+        var expirationCalendar = Calendar.getInstance();
         expirationCalendar.add(Calendar.DAY_OF_YEAR, 7);
         JWTClaimsSet claims = new JWTClaimsSet.Builder()
                 .subject(user.getId())
@@ -56,6 +65,7 @@ public class AccessTokenServiceImpl implements AccessTokenService {
                 .expirationTime(expirationCalendar.getTime())
                 .claim(JWTClaimParameter.AUTHORITIES.getParameterName(), formatAuthorities(user.getAuthorities()))
                 .claim(JWTClaimParameter.EMAIL.getParameterName(), user.getEmail())
+                .claim(JWTClaimParameter.VERSION.getParameterName(), user.getAccessTokenVersion().getVersion())
                 .build();
         JWSHeader jwsHeader = new JWSHeader(JWSAlgorithm.RS256);
         SignedJWT singedJwt = new SignedJWT(jwsHeader, claims);

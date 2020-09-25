@@ -1,6 +1,7 @@
 package org.kushtrimhajrizi.rpalace.security.user;
 
 import org.hibernate.annotations.GenericGenerator;
+import org.kushtrimhajrizi.rpalace.oauth.authserver.accesstoken.versioning.AccessTokenVersion;
 import org.kushtrimhajrizi.rpalace.oauth.authserver.refreshtoken.RefreshToken;
 import org.kushtrimhajrizi.rpalace.security.authority.Authority;
 import org.springframework.security.core.GrantedAuthority;
@@ -15,6 +16,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
 import javax.persistence.Transient;
 import java.util.Collection;
 import java.util.Collections;
@@ -37,6 +39,9 @@ public class User implements UserDetails {
     private String password;
     @Column
     private boolean enabled;
+    @OneToOne(mappedBy = "user",
+            cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REMOVE})
+    private AccessTokenVersion accessTokenVersion;
     @OneToMany(mappedBy = "user", fetch = FetchType.EAGER,
             cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REMOVE})
     private Set<Authority> authorities = new LinkedHashSet<>();
@@ -79,6 +84,14 @@ public class User implements UserDetails {
     @Override
     public String getPassword() {
         return password;
+    }
+
+    public AccessTokenVersion getAccessTokenVersion() {
+        return accessTokenVersion;
+    }
+
+    public void setAccessTokenVersion(AccessTokenVersion accessTokenVersion) {
+        this.accessTokenVersion = accessTokenVersion;
     }
 
     public void setAuthorities(Set<Authority> authorities) {
@@ -133,6 +146,12 @@ public class User implements UserDetails {
         authority.setUser(this);
     }
 
+    @Transient
+    public void addAccessTokenVersion(AccessTokenVersion accessTokenVersion) {
+        this.accessTokenVersion = accessTokenVersion;
+        accessTokenVersion.setUser(this);
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -149,12 +168,13 @@ public class User implements UserDetails {
 
     @Override
     public String toString() {
-        return "DefaultUser{" +
-                "id=" + id +
+        return "User{" +
+                "id='" + id + '\'' +
                 ", email='" + email + '\'' +
                 ", password='" + password + '\'' +
-                ", authorities=" + authorities +
                 ", enabled=" + enabled +
+                ", accessTokenVersion=" + accessTokenVersion +
+                ", authorities=" + authorities +
                 '}';
     }
 }
