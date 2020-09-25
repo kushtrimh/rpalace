@@ -2,7 +2,8 @@ package org.kushtrimhajrizi.rpalace.oauth;
 
 public enum JWTClaimParameter {
     AUTHORITIES("authorities"),
-    EMAIL("email");
+    EMAIL("email"),
+    VERSION("version");
 
     String parameterName;
 

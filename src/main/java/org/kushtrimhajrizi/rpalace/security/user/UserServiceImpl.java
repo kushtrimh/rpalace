@@ -1,6 +1,8 @@
 package org.kushtrimhajrizi.rpalace.security.user;
 
 import org.kushtrimhajrizi.rpalace.exception.UserAlreadyExistsException;
+import org.kushtrimhajrizi.rpalace.oauth.authserver.accesstoken.versioning.AccessTokenVersion;
+import org.kushtrimhajrizi.rpalace.oauth.authserver.accesstoken.versioning.AccessTokenVersionService;
 import org.kushtrimhajrizi.rpalace.security.authority.Authority;
 import org.kushtrimhajrizi.rpalace.security.authority.DefinedAuthority;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -12,12 +14,15 @@ import java.util.Optional;
 @Service
 public class UserServiceImpl implements UserService {
 
-    private final UserRepository userRepository;
-    private final PasswordEncoder passwordEncoder;
+    private UserRepository userRepository;
+    private AccessTokenVersionService accessTokenVersionService;
+    private PasswordEncoder passwordEncoder;
 
     public UserServiceImpl(UserRepository userRepository,
+                           AccessTokenVersionService accessTokenVersionService,
                            PasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
+        this.accessTokenVersionService = accessTokenVersionService;
         this.passwordEncoder = passwordEncoder;
     }
 
@@ -34,6 +39,7 @@ public class UserServiceImpl implements UserService {
                 .map(passwordEncoder::encode).orElseThrow(() -> new IllegalArgumentException("Password is required"));
         User newUser = User.fromEmailAndPassword(userDTO.getEmail(), encodedPassword);
         newUser.addAuthority(new Authority(DefinedAuthority.USER));
+        newUser.addAccessTokenVersion(new AccessTokenVersion(accessTokenVersionService.generateAccessTokenVersion()));
         userRepository.save(newUser);
     }
 

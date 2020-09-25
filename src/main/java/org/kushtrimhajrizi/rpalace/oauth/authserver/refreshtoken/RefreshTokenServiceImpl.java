@@ -31,8 +31,8 @@ public class RefreshTokenServiceImpl implements RefreshTokenService {
     @Transactional
     public String createNew(User user) throws RefreshTokenException {
         refreshTokenRepository.disableActiveRefreshToken(user);
-        UUID uuid = UUID.randomUUID();
-        String token = uuid.toString();
+        var uuid = UUID.randomUUID();
+        var token = uuid.toString();
         String hashedToken = getHashedRefreshToken(token);
         RefreshToken refreshToken = RefreshToken.newActiveRefreshToken(
                 hashedToken, user);
@@ -65,7 +65,7 @@ public class RefreshTokenServiceImpl implements RefreshTokenService {
 
     private String getHashedRefreshToken(String token) throws RefreshTokenException {
         try {
-            MessageDigest digest = MessageDigest.getInstance("SHA-256");
+            var digest = MessageDigest.getInstance("SHA-256");
             byte[] hashedTokenBytes = digest.digest(token.getBytes(StandardCharsets.UTF_8));
             return Base64.getEncoder().encodeToString(hashedTokenBytes);
         } catch (NoSuchAlgorithmException e) {
