@@ -18,13 +18,18 @@ import org.kushtrimhajrizi.rpalace.security.user.UserService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
+@RequestMapping(value = "/auth/token")
 public class AuthServerController {
 
     private static final Logger logger = LogManager.getLogger(AuthServerController.class);
@@ -44,7 +49,7 @@ public class AuthServerController {
         this.refreshTokenService = refreshTokenService;
     }
 
-    @PostMapping("/auth/token")
+    @PostMapping
     public AccessTokenResponse getToken(UserDTO userDto)
             throws UserDoesNotExistException, AccessTokenException, RefreshTokenException {
         User user = userService.getByEmail(userDto.getEmail())
@@ -58,7 +63,7 @@ public class AuthServerController {
                 accessTokenDto.getAccessToken(), refreshToken, accessTokenDto.getExpirationTime().toEpochMilli());
     }
 
-    @PostMapping("/auth/token/refresh")
+    @PostMapping("/refresh")
     public AccessTokenResponse refreshToken(@RequestParam("token") String refreshToken)
             throws RefreshTokenException, AccessTokenException {
         RefreshToken token = refreshTokenService.getActiveRefreshToken(refreshToken);
@@ -71,7 +76,17 @@ public class AuthServerController {
     }
 
     @PreAuthorize("hasAuthority('SCOPE_user')")
-    @GetMapping("/auth/token/test")
+    @PutMapping("/invalidate")
+    public ResponseEntity<?> invalidateAccessToken(Authentication authentication) {
+        JwtAuthenticationToken jwtAuthToken = (JwtAuthenticationToken) authentication;
+        String userId = jwtAuthToken.getToken().getSubject();
+        accessTokenService.invalidate(userId);
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+
+    @PreAuthorize("hasAuthority('SCOPE_user')")
+    @GetMapping("/test")
     public ResponseEntity<String> testAuthorizedRequest() {
         return new ResponseEntity<>("OK", HttpStatus.OK);
     }

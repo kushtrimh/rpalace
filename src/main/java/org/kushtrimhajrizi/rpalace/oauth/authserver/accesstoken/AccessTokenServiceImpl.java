@@ -78,6 +78,12 @@ public class AccessTokenServiceImpl implements AccessTokenService {
         }
     }
 
+    @Override
+    public void invalidate(String userId) {
+        accessTokenVersionService.updateAccessTokenVersion(userId);
+        logger.debug("Token invalidated for user {}", userId);
+    }
+
     private String formatAuthorities(Collection<? extends GrantedAuthority> authorities) {
         return String.join(" ", authorities.stream()
                 .map(GrantedAuthority::getAuthority).collect(Collectors.toList()));
