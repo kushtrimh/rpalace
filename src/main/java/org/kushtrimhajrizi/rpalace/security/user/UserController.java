@@ -30,10 +30,4 @@ public class UserController {
         userService.save(userDTO);
         return new ResponseEntity<Void>(HttpStatus.OK);
     }
-
-    @GetMapping("/private")
-    @PreAuthorize("hasAuthority('SCOPE_admin')")
-    public String getPrivate() {
-        return "OK";
-    }
 }

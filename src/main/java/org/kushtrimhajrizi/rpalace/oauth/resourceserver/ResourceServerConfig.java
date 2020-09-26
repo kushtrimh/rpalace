@@ -1,6 +1,7 @@
 package org.kushtrimhajrizi.rpalace.oauth.resourceserver;
 
 import org.kushtrimhajrizi.rpalace.oauth.JWTClaimParameter;
+import org.kushtrimhajrizi.rpalace.oauth.resourceserver.validator.VersionValidator;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -25,12 +26,18 @@ import java.util.Base64;
 @Configuration
 public class ResourceServerConfig {
 
-    public static final String AUTHORITY_PREFIX = "SCOPE";
+    public static final String AUTHORITY_PREFIX = "SCOPE_";
 
     @Value("${rpalace.jwt.pub-file}")
     private String jwtPublicFilepath;
 
     private RSAPublicKey publicKey;
+
+    private VersionValidator versionValidator;
+
+    public ResourceServerConfig(VersionValidator versionValidator) {
+        this.versionValidator = versionValidator;
+    }
 
     @PostConstruct
     public void init() throws IOException, NoSuchAlgorithmException, InvalidKeySpecException {
@@ -42,7 +49,9 @@ public class ResourceServerConfig {
 
     @Bean
     public JwtDecoder jwtDecoder() {
-        return NimbusJwtDecoder.withPublicKey(publicKey).build();
+        NimbusJwtDecoder decoder = NimbusJwtDecoder.withPublicKey(publicKey).build();
+        decoder.setJwtValidator(versionValidator);
+        return decoder;
     }
 
     @Bean

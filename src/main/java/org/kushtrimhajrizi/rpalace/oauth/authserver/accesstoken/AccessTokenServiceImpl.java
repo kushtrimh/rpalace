@@ -35,15 +35,15 @@ public class AccessTokenServiceImpl implements AccessTokenService {
 
     private static final Logger logger = LoggerFactory.getLogger(AccessTokenServiceImpl.class);
 
+    @Value("${rpalace.jwt.secret-file}")
+    private String jwtSecretFilepath;
+    private PrivateKey privateKey;
+
     private AccessTokenVersionService accessTokenVersionService;
 
     public AccessTokenServiceImpl(AccessTokenVersionService accessTokenVersionService) {
         this.accessTokenVersionService = accessTokenVersionService;
     }
-
-    @Value("${rpalace.jwt.secret-file}")
-    private String jwtSecretFilepath;
-    private PrivateKey privateKey;
 
     @PostConstruct
     public void init() throws IOException, InvalidKeySpecException, NoSuchAlgorithmException {
@@ -76,6 +76,12 @@ public class AccessTokenServiceImpl implements AccessTokenService {
             logger.error("Could not sign access token", e);
             throw new AccessTokenException("Could not create access token", e);
         }
+    }
+
+    @Override
+    public void invalidate(String userId) {
+        accessTokenVersionService.updateAccessTokenVersion(userId);
+        logger.debug("Token invalidated for user {}", userId);
     }
 
     private String formatAuthorities(Collection<? extends GrantedAuthority> authorities) {
