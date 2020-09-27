@@ -1,6 +1,6 @@
 package org.kushtrimhajrizi.rpalace.config;
 
-import org.kushtrimhajrizi.rpalace.oauth.client.OAuth2Interceptor;
+import org.kushtrimhajrizi.rpalace.oauth.client.reddit.OAuth2Interceptor;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;

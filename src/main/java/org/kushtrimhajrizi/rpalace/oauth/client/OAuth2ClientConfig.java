@@ -37,7 +37,7 @@ public class OAuth2ClientConfig {
     @Value("${rpalace.user-agent}")
     private String userAgent;
 
-    private final ClientRegistrationRepository clientRegistrationRepository;
+    private ClientRegistrationRepository clientRegistrationRepository;
 
     public OAuth2ClientConfig(ClientRegistrationRepository clientRegistrationRepository) {
         this.clientRegistrationRepository = clientRegistrationRepository;
@@ -49,7 +49,9 @@ public class OAuth2ClientConfig {
     }
 
     @Bean
-    public OAuth2AuthorizedClientService oAuth2AuthorizedClientService(DataSource dataSource, ClientRegistrationRepository clientRegistrationRepository) {
+    public OAuth2AuthorizedClientService oAuth2AuthorizedClientService(
+            DataSource dataSource,
+            ClientRegistrationRepository clientRegistrationRepository) {
         return new JdbcOAuth2AuthorizedClientService(new JdbcTemplate(dataSource), clientRegistrationRepository);
     }
 

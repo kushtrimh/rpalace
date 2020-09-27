@@ -19,9 +19,6 @@ spring:
           reddit:
             authorization-uri: https://www.reddit.com/api/v1/authorize?duration=permanent
             token-uri: https://www.reddit.com/api/v1/access_token
-            user-info-authentication-method: header
-            user-info-user: https://oauth.reddit.com/api/v1/me
-            user-name-attribute: name
   datasource:
     url: ${RPALACE_DB_URL}
     username: ${RPALACE_DB_USER}
