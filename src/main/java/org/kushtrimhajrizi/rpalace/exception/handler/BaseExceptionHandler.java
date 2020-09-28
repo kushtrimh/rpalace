@@ -9,6 +9,8 @@ import org.kushtrimhajrizi.rpalace.exception.UserDoesNotExistException;
 import org.kushtrimhajrizi.rpalace.exception.ValidationException;
 import org.kushtrimhajrizi.rpalace.exception.response.ExceptionResponse;
 import org.kushtrimhajrizi.rpalace.exception.response.ValidationExceptionResponse;
+import org.springframework.context.MessageSource;
+import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
@@ -20,21 +22,27 @@ import java.time.Instant;
 @ControllerAdvice
 public class BaseExceptionHandler {
 
+    private MessageSource messageSource;
+
+    private BaseExceptionHandler(MessageSource messageSource) {
+        this.messageSource = messageSource;
+    }
+
     @ExceptionHandler(AccessTokenCreationException.class)
     public ResponseEntity<ExceptionResponse> handleAccessTokenCreationException() {
-        return getExceptionResponse("There was a problem while creating your access token",
+        return getLocalizedExceptionResponse("exception.access_token_creation",
                 HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler(AccessTokenException.class)
     public ResponseEntity<ExceptionResponse> handleAccessTokenException() {
-        return getExceptionResponse("There was a problem with your access token",
+        return getLocalizedExceptionResponse("exception.access_token",
                 HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler(RefreshTokenException.class)
     public ResponseEntity<ExceptionResponse> handleRefreshTokenException() {
-        return getExceptionResponse("There was a problem with your refresh token",
+        return getLocalizedExceptionResponse("exception.refresh_Token",
                 HttpStatus.BAD_REQUEST);
     }
 
@@ -45,13 +53,13 @@ public class BaseExceptionHandler {
 
     @ExceptionHandler(UserAlreadyExistsException.class)
     public ResponseEntity<ExceptionResponse> handleUserAlreadyExistsException() {
-        return getExceptionResponse("User already exists",
+        return getLocalizedExceptionResponse("exception.user_exists",
                 HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler(UserDoesNotExistException.class)
     public ResponseEntity<ExceptionResponse> handleUserDoesNotExistException() {
-        return getExceptionResponse("User does not exist",
+        return getLocalizedExceptionResponse("exception.user_does_not_exist",
                 HttpStatus.BAD_REQUEST);
     }
 
@@ -60,7 +68,8 @@ public class BaseExceptionHandler {
             ValidationException validationException) {
         BindingResult bindingResult = validationException.getBindingResult();
         ValidationExceptionResponse response = new ValidationExceptionResponse(
-                "Validation error", Instant.now());
+                messageSource.getMessage("exception.validation", null, LocaleContextHolder.getLocale()),
+                Instant.now());
         bindingResult.getFieldErrors().stream()
                 .forEach(fieldError -> response.addError(fieldError.getField(), fieldError.getDefaultMessage()));
         return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
@@ -68,11 +77,15 @@ public class BaseExceptionHandler {
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ExceptionResponse> handleGeneralException() {
-        return getExceptionResponse("Something went wrong", HttpStatus.INTERNAL_SERVER_ERROR);
+        return getLocalizedExceptionResponse("exception.general", HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
     private ResponseEntity<ExceptionResponse> getExceptionResponse(String message, HttpStatus status) {
-        ExceptionResponse response = new ExceptionResponse(message, Instant.now());
-        return new ResponseEntity<>(response, status);
+        return new ResponseEntity<>(new ExceptionResponse(message, Instant.now()), status);
+    }
+
+    private ResponseEntity<ExceptionResponse> getLocalizedExceptionResponse(String messageKey, HttpStatus status) {
+        String message = messageSource.getMessage(messageKey, null, LocaleContextHolder.getLocale());
+        return new ResponseEntity<>(new ExceptionResponse(message, Instant.now()), status);
     }
 }
