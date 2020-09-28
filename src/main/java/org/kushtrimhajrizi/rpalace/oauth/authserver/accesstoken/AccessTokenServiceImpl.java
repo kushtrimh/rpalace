@@ -6,7 +6,7 @@ import com.nimbusds.jose.JWSHeader;
 import com.nimbusds.jose.crypto.RSASSASigner;
 import com.nimbusds.jwt.JWTClaimsSet;
 import com.nimbusds.jwt.SignedJWT;
-import org.kushtrimhajrizi.rpalace.exception.AccessTokenException;
+import org.kushtrimhajrizi.rpalace.exception.AccessTokenCreationException;
 import org.kushtrimhajrizi.rpalace.oauth.JWTClaimParameter;
 import org.kushtrimhajrizi.rpalace.oauth.authserver.accesstoken.versioning.AccessTokenVersionService;
 import org.kushtrimhajrizi.rpalace.security.user.User;
@@ -54,7 +54,7 @@ public class AccessTokenServiceImpl implements AccessTokenService {
     }
 
     @Override
-    public AccessTokenDTO createNew(User user) throws AccessTokenException {
+    public AccessTokenDTO createNew(User user) throws AccessTokenCreationException {
         String newVersion = accessTokenVersionService.updateAccessTokenVersion(user);
         user.getAccessTokenVersion().setVersion(newVersion);
         var expirationCalendar = Calendar.getInstance();
@@ -74,7 +74,7 @@ public class AccessTokenServiceImpl implements AccessTokenService {
             return new AccessTokenDTO(singedJwt.serialize(), expirationCalendar.toInstant());
         } catch (JOSEException e) {
             logger.error("Could not sign access token", e);
-            throw new AccessTokenException("Could not create access token", e);
+            throw new AccessTokenCreationException("Could not create access token", e);
         }
     }
 
