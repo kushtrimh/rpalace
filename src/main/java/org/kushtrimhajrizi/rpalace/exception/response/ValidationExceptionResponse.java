@@ -5,29 +5,24 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-public class ValidationExceptionResponse {
+public class ValidationExceptionResponse extends ExceptionResponse {
 
-    private Instant timestamp;
-    private List<ValidationError> errors = new ArrayList<>();
+    private List<ValidationError> validationErrors = new ArrayList<>();
+
+    public ValidationExceptionResponse(String message, Instant timestamp) {
+        super(message, timestamp);
+    }
 
     public void addError(String field, String message) {
-        errors.add(new ValidationError(field, message));
+        validationErrors.add(new ValidationError(field, message));
     }
 
-    public Instant getTimestamp() {
-        return timestamp;
+    public List<ValidationError> getValidationErrors() {
+        return validationErrors;
     }
 
-    public void setTimestamp(Instant timestamp) {
-        this.timestamp = timestamp;
-    }
-
-    public List<ValidationError> getErrors() {
-        return errors;
-    }
-
-    public void setErrors(List<ValidationError> errors) {
-        this.errors = errors;
+    public void setValidationErrors(List<ValidationError> validationErrors) {
+        this.validationErrors = validationErrors;
     }
 
     @Override
@@ -35,20 +30,18 @@ public class ValidationExceptionResponse {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         ValidationExceptionResponse that = (ValidationExceptionResponse) o;
-        return Objects.equals(timestamp, that.timestamp) &&
-                Objects.equals(errors, that.errors);
+        return Objects.equals(validationErrors, that.validationErrors);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(timestamp, errors);
+        return Objects.hash(validationErrors);
     }
 
     @Override
     public String toString() {
         return "ValidationExceptionResponse{" +
-                "timestamp=" + timestamp +
-                ", errors=" + errors +
+                ", validationErrors=" + validationErrors +
                 '}';
     }
 
