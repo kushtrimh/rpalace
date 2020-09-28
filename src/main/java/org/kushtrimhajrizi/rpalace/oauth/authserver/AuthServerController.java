@@ -9,7 +9,6 @@ import org.kushtrimhajrizi.rpalace.exception.UserDoesNotExistException;
 import org.kushtrimhajrizi.rpalace.oauth.authserver.accesstoken.AccessTokenDTO;
 import org.kushtrimhajrizi.rpalace.oauth.authserver.accesstoken.AccessTokenResponse;
 import org.kushtrimhajrizi.rpalace.oauth.authserver.accesstoken.AccessTokenService;
-import org.kushtrimhajrizi.rpalace.oauth.authserver.accesstoken.versioning.AccessTokenVersionService;
 import org.kushtrimhajrizi.rpalace.oauth.authserver.refreshtoken.RefreshToken;
 import org.kushtrimhajrizi.rpalace.oauth.authserver.refreshtoken.RefreshTokenService;
 import org.kushtrimhajrizi.rpalace.security.user.User;

@@ -3,7 +3,6 @@ package org.kushtrimhajrizi.rpalace.oauth.authserver.refreshtoken;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.kushtrimhajrizi.rpalace.exception.RefreshTokenException;
-import org.kushtrimhajrizi.rpalace.exception.RefreshTokenNotFoundException;
 import org.kushtrimhajrizi.rpalace.security.user.User;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -42,9 +41,9 @@ public class RefreshTokenServiceImpl implements RefreshTokenService {
 
     @Override
     @Transactional
-    public RefreshToken getActiveRefreshToken(User user) throws RefreshTokenNotFoundException {
+    public RefreshToken getActiveRefreshToken(User user) throws RefreshTokenException {
         return refreshTokenRepository.findByActiveTrueAndUser(user)
-                .orElseThrow(() -> new RefreshTokenNotFoundException("Could not find refresh token"));
+                .orElseThrow(() -> new RefreshTokenException("Could not find refresh token"));
     }
 
     @Override
@@ -52,7 +51,7 @@ public class RefreshTokenServiceImpl implements RefreshTokenService {
     public RefreshToken getActiveRefreshToken(String refreshToken) throws RefreshTokenException {
         String hashedSubmittedRefreshToken = getHashedRefreshToken(refreshToken);
         return refreshTokenRepository.findByRefreshTokenHash(hashedSubmittedRefreshToken)
-                .orElseThrow(RefreshTokenNotFoundException::new);
+                .orElseThrow(RefreshTokenException::new);
     }
 
     @Override

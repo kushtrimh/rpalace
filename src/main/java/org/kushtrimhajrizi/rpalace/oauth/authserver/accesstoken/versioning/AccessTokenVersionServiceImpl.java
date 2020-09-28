@@ -1,6 +1,6 @@
 package org.kushtrimhajrizi.rpalace.oauth.authserver.accesstoken.versioning;
 
-import org.kushtrimhajrizi.rpalace.exception.NotFoundException;
+import org.kushtrimhajrizi.rpalace.exception.AccessTokenException;
 import org.kushtrimhajrizi.rpalace.security.user.User;
 import org.springframework.stereotype.Service;
 
@@ -18,9 +18,9 @@ public class AccessTokenVersionServiceImpl implements AccessTokenVersionService 
 
     @Override
     @Transactional
-    public String getAccessTokenVersion(String userId) {
+    public String getAccessTokenVersion(String userId) throws AccessTokenException {
         AccessTokenVersion version = accessTokenVersionRepository.findByUserId(userId)
-                .orElseThrow(() -> new NotFoundException("User does not have access token version"));
+                .orElseThrow(() -> new AccessTokenException("User does not have access token version"));
         return version.getVersion();
     }
 
