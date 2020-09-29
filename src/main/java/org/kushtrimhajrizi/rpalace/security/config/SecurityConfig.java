@@ -1,5 +1,6 @@
 package org.kushtrimhajrizi.rpalace.security.config;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -7,6 +8,7 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.oauth2.client.OAuth2AuthorizedClientService;
 import org.springframework.security.oauth2.client.endpoint.OAuth2AccessTokenResponseClient;
 import org.springframework.security.oauth2.client.endpoint.OAuth2AuthorizationCodeGrantRequest;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationConverter;
@@ -14,15 +16,21 @@ import org.springframework.security.oauth2.server.resource.authentication.JwtAut
 @EnableWebSecurity
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
-    private final DefaultUserDetailsService defaultUserDetailsService;
-    private final OAuth2AccessTokenResponseClient<OAuth2AuthorizationCodeGrantRequest> oAuth2AccessTokenResponseClient;
-    private final JwtAuthenticationConverter jwtAuthenticationConverter;
+    @Value("${rpalace.oauth2.client.callback}")
+    private String oauth2ClientCallback;
+
+    private DefaultUserDetailsService defaultUserDetailsService;
+    private OAuth2AccessTokenResponseClient<OAuth2AuthorizationCodeGrantRequest> oAuth2AccessTokenResponseClient;
+    private OAuth2AuthorizedClientService oAuth2AuthorizedClientService;
+    private JwtAuthenticationConverter jwtAuthenticationConverter;
 
     public SecurityConfig(DefaultUserDetailsService defaultUserDetailsService,
                           OAuth2AccessTokenResponseClient<OAuth2AuthorizationCodeGrantRequest> oAuth2AccessTokenResponseClient,
+                          OAuth2AuthorizedClientService oAuth2AuthorizedClientService,
                           JwtAuthenticationConverter jwtAuthenticationConverter) {
         this.defaultUserDetailsService = defaultUserDetailsService;
         this.oAuth2AccessTokenResponseClient = oAuth2AccessTokenResponseClient;
+        this.oAuth2AuthorizedClientService = oAuth2AuthorizedClientService;
         this.jwtAuthenticationConverter = jwtAuthenticationConverter;
     }
 
@@ -33,11 +41,15 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                     authorize
                     .antMatchers("/register", "/auth/token", "/auth/token/refresh")
                     .permitAll()
+                    .antMatchers("/oauth2/authorization/reddit", oauth2ClientCallback)
+                    .permitAll() // Temporary
+                    //.access("not( hasAuthority('scope_REDDIT') ) and isAuthenticated()")
                     .anyRequest()
                     .authenticated())
             .oauth2Client(oauth2Client -> oauth2Client
-                .authorizationCodeGrant(codeGrant ->
-                        codeGrant.accessTokenResponseClient(oAuth2AccessTokenResponseClient)))
+                .authorizationCodeGrant(codeGrant ->codeGrant
+                        .accessTokenResponseClient(oAuth2AccessTokenResponseClient))
+                        .authorizedClientService(oAuth2AuthorizedClientService))
             .oauth2ResourceServer(oauth2 -> oauth2
                 .jwt(jwt -> jwt
                     .jwtAuthenticationConverter(jwtAuthenticationConverter)));
