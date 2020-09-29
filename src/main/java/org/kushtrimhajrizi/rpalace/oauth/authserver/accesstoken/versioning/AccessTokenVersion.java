@@ -9,11 +9,16 @@ import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.Index;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
+import javax.persistence.Table;
 import java.util.Objects;
 
 @Entity
+@Table(name = "access_token_version", indexes = {
+        @Index(columnList = "version", name = "access_token_version_versionidx")
+})
 public class AccessTokenVersion {
 
     @Id

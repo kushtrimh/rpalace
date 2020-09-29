@@ -1,4 +1,4 @@
-package org.kushtrimhajrizi.rpalace.oauth.client;
+package org.kushtrimhajrizi.rpalace.oauth.client.reddit;
 
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpRequest;

@@ -13,6 +13,3 @@ CREATE TABLE oauth2_authorized_client (
 );
 -- Please check https://docs.spring.io/spring-security/site/docs/current/reference/html5/#dbschema-oauth2-client
 -- for more information
-
-INSERT INTO `rpalace_schema`.`permission` (`permission_type`, `description`) VALUES ('TOKEN_USER', '');
-INSERT INTO `rpalace_schema`.`permission` (`permission_type`, `description`) VALUES ('ADMINISTRATOR', '');

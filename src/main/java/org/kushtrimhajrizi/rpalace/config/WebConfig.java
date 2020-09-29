@@ -1,10 +1,9 @@
 package org.kushtrimhajrizi.rpalace.config;
 
-import org.kushtrimhajrizi.rpalace.oauth.client.OAuth2Interceptor;
+import org.kushtrimhajrizi.rpalace.oauth.client.reddit.OAuth2Interceptor;
 import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Primary;
 import org.springframework.context.support.ResourceBundleMessageSource;
 import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
 import org.springframework.web.servlet.LocaleResolver;
