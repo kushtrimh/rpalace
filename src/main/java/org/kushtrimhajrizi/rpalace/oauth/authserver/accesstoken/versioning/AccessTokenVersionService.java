@@ -1,10 +1,11 @@
 package org.kushtrimhajrizi.rpalace.oauth.authserver.accesstoken.versioning;
 
+import org.kushtrimhajrizi.rpalace.exception.AccessTokenException;
 import org.kushtrimhajrizi.rpalace.security.user.User;
 
 public interface AccessTokenVersionService {
 
-    String getAccessTokenVersion(String userId);
+    String getAccessTokenVersion(String userId) throws AccessTokenException;
 
     /**
      * Updates the access token version for the given user
