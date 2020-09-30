@@ -1,6 +1,7 @@
 package org.kushtrimhajrizi.rpalace.oauth.client.registration;
 
 import org.hibernate.annotations.GenericGenerator;
+import org.kushtrimhajrizi.rpalace.security.user.User;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -8,20 +9,90 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Index;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.Table;
+import java.time.Instant;
+import java.util.Objects;
 
 /**
  * @author Kushtrim Hajrizi
  */
 @Entity
 @Table(name = "client_registration", indexes = {
-        @Index(columnList = "registration_token", name = "client_registration_registration_token_idx")
+        @Index(columnList = "token", name = "client_registration_registration_token_idx")
 })
-public class ClientRegistration {
-    
+public class ClientRegistrationToken {
+
     @Id
     @Column(length = 64)
     @GenericGenerator(name = "id_generator", strategy = "org.kushtrimhajrizi.rpalace.utils.IdGenerator")
     @GeneratedValue(generator = "id_generator", strategy = GenerationType.SEQUENCE)
     private String id;
+
+    @Column
+    private String token;
+
+    @Column
+    private Instant createdAt;
+
+    @JoinColumn(name = "user_id")
+    @ManyToOne
+    private User user;
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
+
+    public String getToken() {
+        return token;
+    }
+
+    public void setToken(String token) {
+        this.token = token;
+    }
+
+    public Instant getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(Instant createdAt) {
+        this.createdAt = createdAt;
+    }
+
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        ClientRegistrationToken that = (ClientRegistrationToken) o;
+        return Objects.equals(id, that.id) &&
+                Objects.equals(token, that.token) &&
+                Objects.equals(createdAt, that.createdAt);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, token, createdAt);
+    }
+
+    @Override
+    public String toString() {
+        return "ClientRegistrationToken{" +
+                "id='" + id + '\'' +
+                ", token='" + token + '\'' +
+                ", createdAt=" + createdAt +
+                '}';
+    }
 }

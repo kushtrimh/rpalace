@@ -24,7 +24,7 @@ public class RefreshToken {
     @Column
     private String refreshTokenHash;
     @Column
-    private Instant createAt;
+    private Instant createdAt;
     @Column
     private Boolean active;
     @JoinColumn(name = "user_id")
@@ -36,7 +36,7 @@ public class RefreshToken {
         rt.setUser(user);
         rt.setRefreshTokenHash(refreshTokenHash);
         rt.setActive(true);
-        rt.setCreateAt(Instant.now());
+        rt.setCreatedAt(Instant.now());
         return rt;
     }
 
@@ -56,12 +56,12 @@ public class RefreshToken {
         this.refreshTokenHash = refreshTokenHash;
     }
 
-    public Instant getCreateAt() {
-        return createAt;
+    public Instant getCreatedAt() {
+        return createdAt;
     }
 
-    public void setCreateAt(Instant createAt) {
-        this.createAt = createAt;
+    public void setCreatedAt(Instant createdAt) {
+        this.createdAt = createdAt;
     }
 
     public Boolean getActive() {
@@ -87,13 +87,13 @@ public class RefreshToken {
         RefreshToken that = (RefreshToken) o;
         return Objects.equals(id, that.id) &&
                 Objects.equals(refreshTokenHash, that.refreshTokenHash) &&
-                Objects.equals(createAt, that.createAt) &&
+                Objects.equals(createdAt, that.createdAt) &&
                 Objects.equals(active, that.active);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, refreshTokenHash, createAt, active);
+        return Objects.hash(id, refreshTokenHash, createdAt, active);
     }
 
     @Override
@@ -101,7 +101,7 @@ public class RefreshToken {
         return "RefreshToken{" +
                 "id='" + id + '\'' +
                 ", refreshTokenHash='" + refreshTokenHash + '\'' +
-                ", createAt=" + createAt +
+                ", createAt=" + createdAt +
                 ", active=" + active +
                 '}';
     }

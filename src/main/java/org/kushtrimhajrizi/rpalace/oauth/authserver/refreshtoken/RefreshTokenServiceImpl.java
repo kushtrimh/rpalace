@@ -2,16 +2,14 @@ package org.kushtrimhajrizi.rpalace.oauth.authserver.refreshtoken;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.kushtrimhajrizi.rpalace.exception.HashException;
 import org.kushtrimhajrizi.rpalace.exception.RefreshTokenException;
 import org.kushtrimhajrizi.rpalace.security.user.User;
+import org.kushtrimhajrizi.rpalace.utils.Hasher;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
-import java.nio.charset.StandardCharsets;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
-import java.util.Base64;
 import java.util.UUID;
 
 @Service
@@ -32,7 +30,12 @@ public class RefreshTokenServiceImpl implements RefreshTokenService {
         refreshTokenRepository.disableActiveRefreshToken(user);
         var uuid = UUID.randomUUID();
         var token = uuid.toString();
-        String hashedToken = getHashedRefreshToken(token);
+        String hashedToken;
+        try {
+            hashedToken = Hasher.hashSha256(token);
+        } catch (HashException e) {
+            throw new RefreshTokenException("Could not create refresh token", e);
+        }
         RefreshToken refreshToken = RefreshToken.newActiveRefreshToken(
                 hashedToken, user);
         refreshTokenRepository.save(refreshToken);
@@ -49,7 +52,12 @@ public class RefreshTokenServiceImpl implements RefreshTokenService {
     @Override
     @Transactional
     public RefreshToken getActiveRefreshToken(String refreshToken) throws RefreshTokenException {
-        String hashedSubmittedRefreshToken = getHashedRefreshToken(refreshToken);
+        String hashedSubmittedRefreshToken;
+        try {
+            hashedSubmittedRefreshToken = Hasher.hashSha256(refreshToken);
+        } catch (HashException e) {
+            throw new RefreshTokenException("Could not create refresh token", e);
+        }
         return refreshTokenRepository.findByRefreshTokenHash(hashedSubmittedRefreshToken)
                 .orElseThrow(RefreshTokenException::new);
     }
@@ -60,16 +68,5 @@ public class RefreshTokenServiceImpl implements RefreshTokenService {
             throws RefreshTokenException {
         RefreshToken refreshToken = getActiveRefreshToken(submittedRefreshToken);
         return refreshToken.getActive();
-    }
-
-    private String getHashedRefreshToken(String token) throws RefreshTokenException {
-        try {
-            var digest = MessageDigest.getInstance("SHA-256");
-            byte[] hashedTokenBytes = digest.digest(token.getBytes(StandardCharsets.UTF_8));
-            return Base64.getEncoder().encodeToString(hashedTokenBytes);
-        } catch (NoSuchAlgorithmException e) {
-            logger.error(e);
-            throw new RefreshTokenException("Could not create refresh token", e);
-        }
     }
 }

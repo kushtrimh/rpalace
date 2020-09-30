@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>RPalace | Register client</title>
+</head>
+<body th:attr="data-client=${client}">
+    <script>
+        var bodyElement = document.getElementsByTagName('body')[0];
+        var clientId = bodyElement.getAttribute('data-client');
+        window.location.href = '/oauth2/authorization/' + clientId;
+    </script>
+</body>
+</html>

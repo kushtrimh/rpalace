@@ -9,10 +9,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.net.URI;
 
-@PreAuthorize("hasAuthority('SCOPE_user')")
 @RestController
 public class OAuth2ClientController {
 
@@ -25,6 +25,12 @@ public class OAuth2ClientController {
         this.userService = userService;
     }
 
+    @RequestMapping(value = "/oauth2/callback", method = {RequestMethod.GET, RequestMethod.POST})
+    public ResponseEntity<String> oauth2Callback(HttpServletRequest request) {
+        return new ResponseEntity<>("OK", HttpStatus.OK);
+    }
+
+    @PreAuthorize("hasAuthority('SCOPE_user')")
     @RequestMapping(value = "/oauth/reddit", method = {RequestMethod.GET, RequestMethod.POST})
     public ResponseEntity<?> oauthPage(HttpServletResponse response) {
         HttpHeaders headers = new HttpHeaders();
