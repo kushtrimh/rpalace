@@ -1,9 +1,8 @@
 package org.kushtrimhajrizi.rpalace.security.user;
 
-import javax.validation.constraints.Max;
-import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
+import javax.validation.constraints.Size;
 import java.util.Objects;
 
 public class UserDTO {
@@ -13,8 +12,7 @@ public class UserDTO {
         message = "{validation.wrong_email_format}")
     private String email;
     @NotNull(message = "{validation.password_required}")
-    @Min(value = 8, message = "{validation.password_min_eight}")
-    @Max(value = 64, message = "{validation.password_max_sixty_four}")
+    @Size(min = 8, max = 64, message = "{validation.password_max_sixty_four}")
     private String password;
 
     public String getEmail() {

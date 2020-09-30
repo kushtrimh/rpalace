@@ -1,6 +1,5 @@
 package org.kushtrimhajrizi.rpalace.security.config;
 
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -15,9 +14,6 @@ import org.springframework.security.oauth2.server.resource.authentication.JwtAut
 
 @EnableWebSecurity
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
-
-    @Value("${rpalace.oauth2.client.callback}")
-    private String oauth2ClientCallback;
 
     private DefaultUserDetailsService defaultUserDetailsService;
     private OAuth2AccessTokenResponseClient<OAuth2AuthorizationCodeGrantRequest> oAuth2AccessTokenResponseClient;
@@ -39,13 +35,13 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         http.csrf().disable()
             .authorizeRequests(authorize ->
                     authorize
-                    .antMatchers("/register", "/auth/token", "/auth/token/refresh")
+                    .antMatchers("/register", "/auth/token", "/auth/token/refresh",
+                            "/auth/client/register", "/oauth2/callback")
                     .permitAll()
-                    .antMatchers("/oauth2/authorization/reddit", oauth2ClientCallback)
-                    .permitAll() // Temporary
-                    //.access("not( hasAuthority('scope_REDDIT') ) and isAuthenticated()")
+                    .antMatchers("/oauth2/authorization/reddit")
+                    .access("not( hasAuthority('scope_REDDIT') ) and isAuthenticated()")
                     .anyRequest()
-                    .authenticated())
+                    .hasAuthority("SCOPE_user"))
             .oauth2Client(oauth2Client -> oauth2Client
                 .authorizationCodeGrant(codeGrant ->codeGrant
                         .accessTokenResponseClient(oAuth2AccessTokenResponseClient))

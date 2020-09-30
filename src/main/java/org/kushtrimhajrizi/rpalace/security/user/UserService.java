@@ -9,4 +9,6 @@ public interface UserService {
     void save(UserDTO userDTO) throws UserAlreadyExistsException;
 
     Optional<User> getByEmail(String email);
+
+    Optional<User> getById(String id);
 }
