@@ -25,6 +25,9 @@ public class OAuth2AuthorizedClientServiceImpl implements OAuth2AuthorizedClient
     private ClientRegistrationRepository clientRegistrationRepository;
     private UserRepository userRepository;
 
+    public OAuth2AuthorizedClientServiceImpl() {
+    }
+
     public OAuth2AuthorizedClientServiceImpl(
             OAuth2AuthorizedClientEntityRepository oAuth2AuthorizedClientEntityRepository,
             ClientRegistrationRepository clientRegistrationRepository,
@@ -37,7 +40,7 @@ public class OAuth2AuthorizedClientServiceImpl implements OAuth2AuthorizedClient
     @Override
     @Transactional
     public <T extends OAuth2AuthorizedClient> T loadAuthorizedClient(String clientRegistrationId, String principalName) {
-        User user = userRepository.findByEmail(principalName).orElseThrow(UserDoesNotExistException::new);
+        User user = userRepository.findById(principalName).orElseThrow(UserDoesNotExistException::new);
         OAuth2AuthorizedClientEntity entity = oAuth2AuthorizedClientEntityRepository.findByClientIdAndUser(
                 clientRegistrationId, user).orElse(null);
         if (entity == null) {
@@ -54,7 +57,7 @@ public class OAuth2AuthorizedClientServiceImpl implements OAuth2AuthorizedClient
         OAuth2RefreshToken oAuth2RefreshToken = oAuth2AuthorizedClient.getRefreshToken();
 
         var oAuth2AuthorizedClientEntity = new OAuth2AuthorizedClientEntity.Builder()
-                .clientId(oAuth2AuthorizedClient.getClientRegistration().getClientId())
+                .clientId(oAuth2AuthorizedClient.getClientRegistration().getRegistrationId())
                 .user(user)
                 .accessTokenType(oAuth2AccessToken.getTokenType().getValue())
                 .accessToken(oAuth2AccessToken.getTokenValue())
@@ -72,7 +75,7 @@ public class OAuth2AuthorizedClientServiceImpl implements OAuth2AuthorizedClient
     @Override
     @Transactional
     public void removeAuthorizedClient(String clientRegistrationId, String principalName) {
-        User user = userRepository.findByEmail(principalName).orElseThrow(UserDoesNotExistException::new);
+        User user = userRepository.findById(principalName).orElseThrow(UserDoesNotExistException::new);
         oAuth2AuthorizedClientEntityRepository.deleteByClientIdAndUser(clientRegistrationId, user);
     }
 
