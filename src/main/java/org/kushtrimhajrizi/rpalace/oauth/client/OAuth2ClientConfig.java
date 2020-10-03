@@ -1,14 +1,13 @@
 package org.kushtrimhajrizi.rpalace.oauth.client;
 
+import org.kushtrimhajrizi.rpalace.security.user.UserRepository;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.RequestEntity;
 import org.springframework.http.converter.FormHttpMessageConverter;
-import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.security.oauth2.client.AuthorizedClientServiceOAuth2AuthorizedClientManager;
-import org.springframework.security.oauth2.client.JdbcOAuth2AuthorizedClientService;
 import org.springframework.security.oauth2.client.OAuth2AuthorizedClientManager;
 import org.springframework.security.oauth2.client.OAuth2AuthorizedClientProvider;
 import org.springframework.security.oauth2.client.OAuth2AuthorizedClientProviderBuilder;
@@ -27,7 +26,6 @@ import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 
-import javax.sql.DataSource;
 import java.net.URI;
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;
@@ -52,10 +50,14 @@ public class OAuth2ClientConfig {
 
     @Bean
     public OAuth2AuthorizedClientService oAuth2AuthorizedClientService(
-            DataSource dataSource,
-            ClientRegistrationRepository clientRegistrationRepository) {
-        return new JdbcOAuth2AuthorizedClientService(new JdbcTemplate(dataSource), clientRegistrationRepository);
+            ClientRegistrationRepository clientRegistrationRepository,
+            UserRepository userRepository,
+            OAuth2AuthorizedClientEntityRepository oAuth2AuthorizedClientEntityRepository) {
+        return new OAuth2AuthorizedClientServiceImpl(oAuth2AuthorizedClientEntityRepository,
+                clientRegistrationRepository,
+                userRepository);
     }
+
 
     @Bean
     public OAuth2AuthorizedClientRepository oAuth2AuthorizedClientRepository(
