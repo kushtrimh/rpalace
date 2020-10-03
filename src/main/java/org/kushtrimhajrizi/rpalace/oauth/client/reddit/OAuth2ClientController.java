@@ -16,12 +16,9 @@ import java.net.URI;
 @RestController
 public class OAuth2ClientController {
 
-    private final OAuth2TokenService oAuth2TokenService;
     private final UserService userService;
 
-    public OAuth2ClientController(OAuth2TokenService oAuth2TokenService,
-                                  UserService userService ) {
-        this.oAuth2TokenService = oAuth2TokenService;
+    public OAuth2ClientController(UserService userService ) {
         this.userService = userService;
     }
 

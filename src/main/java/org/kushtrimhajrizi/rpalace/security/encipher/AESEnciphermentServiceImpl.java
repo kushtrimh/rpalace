@@ -4,7 +4,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.kushtrimhajrizi.rpalace.exception.EnciphermentException;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
 import javax.crypto.BadPaddingException;
@@ -26,7 +26,7 @@ import java.util.Base64;
 /**
  * @author Kushtrim Hajrizi
  */
-@Service
+@Component
 public class AESEnciphermentServiceImpl implements AESEnciphermentService {
 
     private static final Logger logger = LogManager.getLogger(AESEnciphermentServiceImpl.class);

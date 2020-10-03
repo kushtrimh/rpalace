@@ -3,6 +3,7 @@ package org.kushtrimhajrizi.rpalace.security.user;
 import org.hibernate.annotations.GenericGenerator;
 import org.kushtrimhajrizi.rpalace.oauth.authserver.accesstoken.versioning.AccessTokenVersion;
 import org.kushtrimhajrizi.rpalace.oauth.authserver.refreshtoken.RefreshToken;
+import org.kushtrimhajrizi.rpalace.oauth.client.OAuth2AuthorizedClientEntity;
 import org.kushtrimhajrizi.rpalace.security.authority.Authority;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.AuthorityUtils;
@@ -47,6 +48,8 @@ public class User implements UserDetails {
     private Set<Authority> authorities = new LinkedHashSet<>();
     @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
     private Set<RefreshToken> refreshTokens = new LinkedHashSet<>();
+    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
+    private Set<OAuth2AuthorizedClientEntity> oAuth2AuthorizedClientEntities = new LinkedHashSet<>();
 
     public static User fromEmailAndPassword(String email, String password) {
         User user = new User();
@@ -150,6 +153,14 @@ public class User implements UserDetails {
     public void addAccessTokenVersion(AccessTokenVersion accessTokenVersion) {
         this.accessTokenVersion = accessTokenVersion;
         accessTokenVersion.setUser(this);
+    }
+
+    public Set<OAuth2AuthorizedClientEntity> getoAuth2AuthorizedClientEntities() {
+        return oAuth2AuthorizedClientEntities;
+    }
+
+    public void setoAuth2AuthorizedClientEntities(Set<OAuth2AuthorizedClientEntity> oAuth2AuthorizedClientEntities) {
+        this.oAuth2AuthorizedClientEntities = oAuth2AuthorizedClientEntities;
     }
 
     @Override
