@@ -29,16 +29,17 @@ public class ClientRegistrationToken {
     @GenericGenerator(name = "id_generator", strategy = "org.kushtrimhajrizi.rpalace.utils.IdGenerator")
     @GeneratedValue(generator = "id_generator", strategy = GenerationType.SEQUENCE)
     private String id;
-
     @Column
     private String token;
-
     @Column
     private Instant createdAt;
-
     @JoinColumn(name = "user_id")
     @ManyToOne
     private User user;
+    @Column
+    private Boolean active;
+    @Column
+    private String returnUrl;
 
     public String getId() {
         return id;
@@ -72,6 +73,22 @@ public class ClientRegistrationToken {
         this.user = user;
     }
 
+    public Boolean getActive() {
+        return active;
+    }
+
+    public void setActive(Boolean active) {
+        this.active = active;
+    }
+
+    public String getReturnUrl() {
+        return returnUrl;
+    }
+
+    public void setReturnUrl(String returnUrl) {
+        this.returnUrl = returnUrl;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -79,12 +96,13 @@ public class ClientRegistrationToken {
         ClientRegistrationToken that = (ClientRegistrationToken) o;
         return Objects.equals(id, that.id) &&
                 Objects.equals(token, that.token) &&
-                Objects.equals(createdAt, that.createdAt);
+                Objects.equals(createdAt, that.createdAt) &&
+                Objects.equals(active, that.active);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, token, createdAt);
+        return Objects.hash(id, token, createdAt, active);
     }
 
     @Override
@@ -93,6 +111,8 @@ public class ClientRegistrationToken {
                 "id='" + id + '\'' +
                 ", token='" + token + '\'' +
                 ", createdAt=" + createdAt +
+                ", active=" + active +
+                ", returnUrl='" + returnUrl + '\'' +
                 '}';
     }
 }

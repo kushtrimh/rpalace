@@ -2,8 +2,11 @@ package org.kushtrimhajrizi.rpalace.exception.handler;
 
 import org.kushtrimhajrizi.rpalace.exception.AccessTokenCreationException;
 import org.kushtrimhajrizi.rpalace.exception.AccessTokenException;
+import org.kushtrimhajrizi.rpalace.exception.ClientRegistrationTokenException;
+import org.kushtrimhajrizi.rpalace.exception.ExistingClientException;
 import org.kushtrimhajrizi.rpalace.exception.RefreshTokenException;
 import org.kushtrimhajrizi.rpalace.exception.UnauthorizedException;
+import org.kushtrimhajrizi.rpalace.exception.UnsupportedClientException;
 import org.kushtrimhajrizi.rpalace.exception.UserAlreadyExistsException;
 import org.kushtrimhajrizi.rpalace.exception.UserDoesNotExistException;
 import org.kushtrimhajrizi.rpalace.exception.ValidationException;
@@ -78,6 +81,21 @@ public class BaseExceptionHandler {
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ExceptionResponse> handleGeneralException() {
         return getLocalizedExceptionResponse("exception.general", HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    @ExceptionHandler(ExistingClientException.class)
+    public ResponseEntity<ExceptionResponse> handleExistingClientException() {
+        return getLocalizedExceptionResponse("exception.existing_client", HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(UnsupportedClientException.class)
+    public ResponseEntity<ExceptionResponse> handleUnsupportedClientException() {
+        return getLocalizedExceptionResponse("exception.unsupported_client", HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(ClientRegistrationTokenException.class)
+    public ResponseEntity<ExceptionResponse> handleClientRegistrationTokenException() {
+        return getLocalizedExceptionResponse("exception.registration_token_problem", HttpStatus.BAD_REQUEST);
     }
 
     private ResponseEntity<ExceptionResponse> getExceptionResponse(String message, HttpStatus status) {

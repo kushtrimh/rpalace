@@ -9,9 +9,16 @@ import java.util.Optional;
  */
 public interface ClientRegistrationTokenService {
 
-    ClientRegistrationTokenDTO createClientRegistrationToken(User user);
+    ClientRegistrationTokenDTO createClientRegistrationToken(User user,
+                                                             ClientRegistrationTokenDTO clientRegistrationTokenDTO);
 
     Optional<ClientRegistrationToken> getClientRegistrationToken(String token);
 
+    Optional<ClientRegistrationToken> getClientRegistrationToken(User user);
+
     void delete(ClientRegistrationToken clientRegistrationToken);
+
+    void delete(User user);
+
+    void disable(ClientRegistrationToken clientRegistrationToken);
 }

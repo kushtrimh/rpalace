@@ -28,7 +28,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional
-    public void save(UserDTO userDTO) throws UserAlreadyExistsException {
+    public void save(UserDTO userDTO) {
         if (userDTO == null) {
             throw new IllegalArgumentException("User DTO is required");
         }

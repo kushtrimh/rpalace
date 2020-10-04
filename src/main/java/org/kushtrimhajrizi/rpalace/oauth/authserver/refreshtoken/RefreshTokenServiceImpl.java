@@ -26,7 +26,7 @@ public class RefreshTokenServiceImpl implements RefreshTokenService {
 
     @Override
     @Transactional
-    public String createNew(User user) throws RefreshTokenException {
+    public String createNew(User user) {
         refreshTokenRepository.disableActiveRefreshToken(user);
         var uuid = UUID.randomUUID();
         var token = uuid.toString();
@@ -44,14 +44,14 @@ public class RefreshTokenServiceImpl implements RefreshTokenService {
 
     @Override
     @Transactional
-    public RefreshToken getActiveRefreshToken(User user) throws RefreshTokenException {
+    public RefreshToken getActiveRefreshToken(User user)  {
         return refreshTokenRepository.findByActiveTrueAndUser(user)
                 .orElseThrow(() -> new RefreshTokenException("Could not find refresh token"));
     }
 
     @Override
     @Transactional
-    public RefreshToken getActiveRefreshToken(String refreshToken) throws RefreshTokenException {
+    public RefreshToken getActiveRefreshToken(String refreshToken) {
         String hashedSubmittedRefreshToken;
         try {
             hashedSubmittedRefreshToken = Hasher.hashSha256(refreshToken);
@@ -64,8 +64,7 @@ public class RefreshTokenServiceImpl implements RefreshTokenService {
 
     @Override
     @Transactional
-    public boolean isActiveRefreshToken(String submittedRefreshToken)
-            throws RefreshTokenException {
+    public boolean isActiveRefreshToken(String submittedRefreshToken) {
         RefreshToken refreshToken = getActiveRefreshToken(submittedRefreshToken);
         return refreshToken.getActive();
     }
