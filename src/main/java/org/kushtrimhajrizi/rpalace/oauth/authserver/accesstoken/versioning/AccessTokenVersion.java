@@ -26,10 +26,8 @@ public class AccessTokenVersion {
     @GenericGenerator(name = "id_generator", strategy = "org.kushtrimhajrizi.rpalace.utils.IdGenerator")
     @GeneratedValue(generator = "id_generator", strategy = GenerationType.SEQUENCE)
     private String id;
-
     @Column(name = "version")
     private String version;
-
     @JoinColumn(name = "user_id")
     @OneToOne(fetch = FetchType.LAZY)
     private User user;

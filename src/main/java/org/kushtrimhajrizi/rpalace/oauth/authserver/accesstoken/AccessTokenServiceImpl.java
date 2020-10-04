@@ -54,7 +54,7 @@ public class AccessTokenServiceImpl implements AccessTokenService {
     }
 
     @Override
-    public AccessTokenDTO createNew(User user) throws AccessTokenCreationException {
+    public AccessTokenDTO createNew(User user) {
         String newVersion = accessTokenVersionService.updateAccessTokenVersion(user);
         user.getAccessTokenVersion().setVersion(newVersion);
         var expirationCalendar = Calendar.getInstance();

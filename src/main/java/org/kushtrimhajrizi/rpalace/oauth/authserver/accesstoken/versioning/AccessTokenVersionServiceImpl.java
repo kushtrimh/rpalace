@@ -18,7 +18,7 @@ public class AccessTokenVersionServiceImpl implements AccessTokenVersionService 
 
     @Override
     @Transactional
-    public String getAccessTokenVersion(String userId) throws AccessTokenException {
+    public String getAccessTokenVersion(String userId) {
         AccessTokenVersion version = accessTokenVersionRepository.findByUserId(userId)
                 .orElseThrow(() -> new AccessTokenException("User does not have access token version"));
         return version.getVersion();

@@ -1,6 +1,6 @@
 package org.kushtrimhajrizi.rpalace.exception;
 
-public class RefreshTokenException extends Exception {
+public class RefreshTokenException extends RuntimeException {
 
     public RefreshTokenException() {
     }

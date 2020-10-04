@@ -2,7 +2,6 @@ package org.kushtrimhajrizi.rpalace.oauth.authserver;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.kushtrimhajrizi.rpalace.exception.AccessTokenException;
 import org.kushtrimhajrizi.rpalace.exception.RefreshTokenException;
 import org.kushtrimhajrizi.rpalace.exception.UnauthorizedException;
 import org.kushtrimhajrizi.rpalace.exception.UserDoesNotExistException;
@@ -49,8 +48,7 @@ public class AuthServerController {
     }
 
     @PostMapping
-    public AccessTokenResponse getToken(UserDTO userDto)
-            throws UserDoesNotExistException, AccessTokenException, RefreshTokenException {
+    public AccessTokenResponse getToken(UserDTO userDto) {
         User user = userService.getByEmail(userDto.getEmail())
                 .orElseThrow(() -> new UserDoesNotExistException("User does not exist"));
         if (!passwordEncoder.matches(userDto.getPassword(), user.getPassword())) {
@@ -63,8 +61,7 @@ public class AuthServerController {
     }
 
     @PostMapping("/refresh")
-    public AccessTokenResponse refreshToken(@RequestParam("token") String refreshToken)
-            throws RefreshTokenException, AccessTokenException {
+    public AccessTokenResponse refreshToken(@RequestParam("token") String refreshToken) {
         RefreshToken token = refreshTokenService.getActiveRefreshToken(refreshToken);
         if (token.getActive()) {
             AccessTokenDTO accessTokenDto = accessTokenService.createNew(token.getUser());

@@ -1,5 +1,6 @@
 package org.kushtrimhajrizi.rpalace.oauth.client.registration;
 
+import javax.validation.constraints.NotEmpty;
 import java.time.Instant;
 import java.util.Objects;
 
@@ -9,10 +10,16 @@ import java.util.Objects;
 public class ClientRegistrationTokenDTO {
     private String token;
     private Instant createdAt;
+    @NotEmpty(message = "{validation.return_url_required}")
+    private String returnUrl;
 
-    public ClientRegistrationTokenDTO(String token, Instant createdAt) {
+    public ClientRegistrationTokenDTO() {
+    }
+
+    public ClientRegistrationTokenDTO(String token, Instant createdAt, String returnUrl) {
         this.token = token;
         this.createdAt = createdAt;
+        this.returnUrl = returnUrl;
     }
 
     public String getToken() {
@@ -31,18 +38,27 @@ public class ClientRegistrationTokenDTO {
         this.createdAt = createdAt;
     }
 
+    public String getReturnUrl() {
+        return returnUrl;
+    }
+
+    public void setReturnUrl(String returnUrl) {
+        this.returnUrl = returnUrl;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         ClientRegistrationTokenDTO that = (ClientRegistrationTokenDTO) o;
         return Objects.equals(token, that.token) &&
-                Objects.equals(createdAt, that.createdAt);
+                Objects.equals(createdAt, that.createdAt) &&
+                Objects.equals(returnUrl, that.returnUrl);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(token, createdAt);
+        return Objects.hash(token, createdAt, returnUrl);
     }
 
     @Override
@@ -50,6 +66,7 @@ public class ClientRegistrationTokenDTO {
         return "ClientRegistrationTokenDTO{" +
                 "token='" + token + '\'' +
                 ", createdAt=" + createdAt +
+                ", returnUrl='" + returnUrl + '\'' +
                 '}';
     }
 }

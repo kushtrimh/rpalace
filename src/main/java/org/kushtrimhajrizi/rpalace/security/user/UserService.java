@@ -1,12 +1,10 @@
 package org.kushtrimhajrizi.rpalace.security.user;
 
-import org.kushtrimhajrizi.rpalace.exception.UserAlreadyExistsException;
-
 import java.util.Optional;
 
 public interface UserService {
 
-    void save(UserDTO userDTO) throws UserAlreadyExistsException;
+    void save(UserDTO userDTO);
 
     Optional<User> getByEmail(String email);
 
