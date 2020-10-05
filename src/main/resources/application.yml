@@ -12,7 +12,7 @@ spring:
             client-secret: ${RPALACE_REDDIT_CLIENT_SECRET}
             client-authentication-method: basic
             authorization-grant-type: authorization_code
-            redirect-uri: # NOTE: Insert your own redirect URI for Reddit, e.g https://<host:port>/oauth2/callback
+            redirect-uri: http://localhost:8090/oauth2/callback # NOTE: Insert your own redirect URI for Reddit, e.g https://<host:port>/oauth2/callback
             scope: history, save, read, mysubreddits, identity
             client-name: rpalace-client
         provider:
@@ -31,8 +31,8 @@ spring:
     hibernate:
       ddl-auto: update
   redis:
-    host: # NOTE: Insert your own Redis host
-    port: # NOTE: Insert your own Redis port
+    host: localhost # NOTE: Insert your own Redis host
+    port: 6379 # NOTE: Insert your own Redis port
 server:
   port: 8090
 rpalace:
