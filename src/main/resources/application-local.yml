@@ -49,4 +49,4 @@ logging:
       kushtrimhajrizi:
         rpalace: INFO
       springframework:
-        security: INFO
+        security: ERROR

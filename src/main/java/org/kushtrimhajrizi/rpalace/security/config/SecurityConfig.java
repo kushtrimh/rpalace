@@ -43,9 +43,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                     .anyRequest()
                     .hasAuthority("SCOPE_user"))
             .oauth2Client(oauth2Client -> oauth2Client
-                .authorizationCodeGrant(codeGrant ->codeGrant
-                        .accessTokenResponseClient(oAuth2AccessTokenResponseClient))
-                        .authorizedClientService(oAuth2AuthorizedClientService))
+                .authorizationCodeGrant(codeGrant -> codeGrant
+                    .accessTokenResponseClient(oAuth2AccessTokenResponseClient))
+                .authorizedClientService(oAuth2AuthorizedClientService))
             .oauth2ResourceServer(oauth2 -> oauth2
                 .jwt(jwt -> jwt
                     .jwtAuthenticationConverter(jwtAuthenticationConverter)));

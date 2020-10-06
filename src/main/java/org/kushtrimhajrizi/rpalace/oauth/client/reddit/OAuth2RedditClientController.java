@@ -5,10 +5,6 @@ import org.kushtrimhajrizi.rpalace.oauth.client.registration.ClientRegistrationT
 import org.kushtrimhajrizi.rpalace.oauth.client.registration.ClientRegistrationTokenService;
 import org.kushtrimhajrizi.rpalace.security.user.User;
 import org.kushtrimhajrizi.rpalace.security.user.UserService;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -17,19 +13,20 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.view.RedirectView;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import java.net.URI;
 
 @RestController
-public class OAuth2ClientController {
+public class OAuth2RedditClientController {
 
     private UserService userService;
     private ClientRegistrationTokenService clientRegistrationTokenService;
+    private OAuth2RedditClient oAuth2RedditClient;
 
-    public OAuth2ClientController(UserService userService,
-                                  ClientRegistrationTokenService clientRegistrationTokenService) {
+    public OAuth2RedditClientController(UserService userService,
+                                        ClientRegistrationTokenService clientRegistrationTokenService,
+                                        OAuth2RedditClient oAuth2RedditClient) {
         this.userService = userService;
         this.clientRegistrationTokenService = clientRegistrationTokenService;
+        this.oAuth2RedditClient = oAuth2RedditClient;
     }
 
     @RequestMapping(value = "/oauth2/callback", method = {RequestMethod.GET, RequestMethod.POST})
@@ -45,13 +42,5 @@ public class OAuth2ClientController {
         RedirectView redirect = new RedirectView();
         redirect.setUrl(clientRegistrationToken.getReturnUrl());
         return redirect;
-    }
-
-    @PreAuthorize("hasAuthority('SCOPE_user')")
-    @RequestMapping(value = "/oauth/reddit", method = {RequestMethod.GET, RequestMethod.POST})
-    public ResponseEntity<?> oauthPage(HttpServletResponse response) {
-        HttpHeaders headers = new HttpHeaders();
-        headers.setLocation(URI.create("/oauth2/authorization/reddit"));
-        return new ResponseEntity<>(headers, HttpStatus.FOUND);
     }
 }
