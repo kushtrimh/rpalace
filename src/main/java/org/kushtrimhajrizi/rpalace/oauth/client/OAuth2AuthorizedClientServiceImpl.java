@@ -3,12 +3,15 @@ package org.kushtrimhajrizi.rpalace.oauth.client;
 import org.kushtrimhajrizi.rpalace.exception.UserDoesNotExistException;
 import org.kushtrimhajrizi.rpalace.security.user.User;
 import org.kushtrimhajrizi.rpalace.security.user.UserRepository;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.oauth2.client.OAuth2AuthorizedClient;
 import org.springframework.security.oauth2.client.OAuth2AuthorizedClientService;
 import org.springframework.security.oauth2.client.registration.ClientRegistrationRepository;
 import org.springframework.security.oauth2.core.OAuth2AccessToken;
 import org.springframework.security.oauth2.core.OAuth2RefreshToken;
+import org.springframework.security.oauth2.jwt.Jwt;
+import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 
 import javax.transaction.Transactional;
 import java.time.Instant;
@@ -52,7 +55,16 @@ public class OAuth2AuthorizedClientServiceImpl implements OAuth2AuthorizedClient
     @Override
     @Transactional
     public void saveAuthorizedClient(OAuth2AuthorizedClient oAuth2AuthorizedClient, Authentication authentication) {
-        User user = (User) authentication.getPrincipal();
+        User user = null;
+        if (authentication instanceof UsernamePasswordAuthenticationToken) {
+            user = (User) authentication.getPrincipal();
+        } else if (authentication instanceof JwtAuthenticationToken) {
+            String userId = ((Jwt) authentication.getPrincipal()).getSubject();
+            user = userRepository.findById(userId).orElseThrow(UserDoesNotExistException::new);
+        }
+        if (user == null) {
+            throw new UserDoesNotExistException("Could not get user from authentication object " + authentication);
+        }
         OAuth2AccessToken oAuth2AccessToken = oAuth2AuthorizedClient.getAccessToken();
         OAuth2RefreshToken oAuth2RefreshToken = oAuth2AuthorizedClient.getRefreshToken();
 
