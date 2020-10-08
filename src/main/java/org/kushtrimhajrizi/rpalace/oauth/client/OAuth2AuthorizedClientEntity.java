@@ -51,6 +51,8 @@ public class OAuth2AuthorizedClientEntity {
     private Instant refreshTokenIssuedAt;
     @Column
     private Instant createdAt;
+    @Column
+    private Boolean active;
 
     public OAuth2AuthorizedClientEntity() {
     }
@@ -67,6 +69,7 @@ public class OAuth2AuthorizedClientEntity {
         this.refreshToken = builder.refreshToken;
         this.refreshTokenIssuedAt = builder.refreshTokenIssuedAt;
         this.createdAt = builder.createdAt;
+        this.active = builder.active;
     }
 
     public String getId() {
@@ -157,6 +160,14 @@ public class OAuth2AuthorizedClientEntity {
         this.createdAt = createdAt;
     }
 
+    public Boolean getActive() {
+        return active;
+    }
+
+    public void setActive(Boolean active) {
+        this.active = active;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -167,12 +178,13 @@ public class OAuth2AuthorizedClientEntity {
                 Objects.equals(user, that.user) &&
                 Objects.equals(accessToken, that.accessToken) &&
                 Objects.equals(refreshToken, that.refreshToken) &&
-                Objects.equals(createdAt, that.createdAt);
+                Objects.equals(createdAt, that.createdAt) &&
+                Objects.equals(active, that.active);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, clientId, user, accessToken, refreshToken, createdAt);
+        return Objects.hash(id, clientId, user, accessToken, refreshToken, createdAt, active);
     }
 
     @Override
@@ -189,6 +201,7 @@ public class OAuth2AuthorizedClientEntity {
                 ", refreshToken='" + refreshToken + '\'' +
                 ", refreshTokenIssuedAt=" + refreshTokenIssuedAt +
                 ", createdAt=" + createdAt +
+                ", active=" + active +
                 '}';
     }
 
@@ -204,6 +217,7 @@ public class OAuth2AuthorizedClientEntity {
         private String refreshToken;
         private Instant refreshTokenIssuedAt;
         private Instant createdAt;
+        private Boolean active;
 
         public Builder id(String id) {
             this.id = id;
@@ -257,6 +271,11 @@ public class OAuth2AuthorizedClientEntity {
 
         public Builder createdAt(Instant createdAt) {
             this.createdAt = createdAt;
+            return this;
+        }
+
+        public Builder active(Boolean active) {
+            this.active = active;
             return this;
         }
 

@@ -1,6 +1,8 @@
 package org.kushtrimhajrizi.rpalace.oauth.client;
 
 import org.kushtrimhajrizi.rpalace.exception.UserDoesNotExistException;
+import org.kushtrimhajrizi.rpalace.security.authority.Authority;
+import org.kushtrimhajrizi.rpalace.security.authority.DefinedAuthority;
 import org.kushtrimhajrizi.rpalace.security.user.User;
 import org.kushtrimhajrizi.rpalace.security.user.UserRepository;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -44,7 +46,7 @@ public class OAuth2AuthorizedClientServiceImpl implements OAuth2AuthorizedClient
     @Transactional
     public <T extends OAuth2AuthorizedClient> T loadAuthorizedClient(String clientRegistrationId, String principalName) {
         User user = userRepository.findById(principalName).orElseThrow(UserDoesNotExistException::new);
-        OAuth2AuthorizedClientEntity entity = oAuth2AuthorizedClientEntityRepository.findByClientIdAndUser(
+        OAuth2AuthorizedClientEntity entity = oAuth2AuthorizedClientEntityRepository.findByClientIdAndUserAndActiveTrue(
                 clientRegistrationId, user).orElse(null);
         if (entity == null) {
             return null;
@@ -67,9 +69,11 @@ public class OAuth2AuthorizedClientServiceImpl implements OAuth2AuthorizedClient
         }
         OAuth2AccessToken oAuth2AccessToken = oAuth2AuthorizedClient.getAccessToken();
         OAuth2RefreshToken oAuth2RefreshToken = oAuth2AuthorizedClient.getRefreshToken();
-
+        String clientRegistrationId = oAuth2AuthorizedClient.getClientRegistration().getRegistrationId();
+        updateUserAuthorities(user, clientRegistrationId);
+        oAuth2AuthorizedClientEntityRepository.deactive(clientRegistrationId, user);
         var oAuth2AuthorizedClientEntity = new OAuth2AuthorizedClientEntity.Builder()
-                .clientId(oAuth2AuthorizedClient.getClientRegistration().getRegistrationId())
+                .clientId(clientRegistrationId)
                 .user(user)
                 .accessTokenType(oAuth2AccessToken.getTokenType().getValue())
                 .accessToken(oAuth2AccessToken.getTokenValue())
@@ -79,6 +83,7 @@ public class OAuth2AuthorizedClientServiceImpl implements OAuth2AuthorizedClient
                 .refreshToken(oAuth2RefreshToken.getTokenValue())
                 .refreshTokenIssuedAt(oAuth2RefreshToken.getIssuedAt())
                 .createdAt(Instant.now())
+                .active(true)
                 .build();
 
         oAuth2AuthorizedClientEntityRepository.save(oAuth2AuthorizedClientEntity);
@@ -106,5 +111,12 @@ public class OAuth2AuthorizedClientServiceImpl implements OAuth2AuthorizedClient
                 entity.getUser().getEmail(),
                 accessToken,
                 refreshToken);
+    }
+
+    private void updateUserAuthorities(User user, String clientRegistrationId) {
+        if (clientRegistrationId.equals("reddit")) {
+            user.addAuthority(new Authority(DefinedAuthority.REDDIT_CLIENT));
+        }
+        userRepository.save(user);
     }
 }
