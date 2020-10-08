@@ -1,11 +1,16 @@
 package org.kushtrimhajrizi.rpalace.oauth.client;
 
+import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 import org.kushtrimhajrizi.rpalace.security.user.UserRepository;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.RequestEntity;
+import org.springframework.http.codec.json.Jackson2JsonDecoder;
+import org.springframework.http.codec.json.Jackson2JsonEncoder;
 import org.springframework.http.converter.FormHttpMessageConverter;
 import org.springframework.security.oauth2.client.OAuth2AuthorizedClientManager;
 import org.springframework.security.oauth2.client.OAuth2AuthorizedClientProvider;
@@ -29,6 +34,7 @@ import org.springframework.security.oauth2.core.http.converter.OAuth2AccessToken
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.reactive.function.client.ExchangeStrategies;
 import org.springframework.web.reactive.function.client.WebClient;
 
 import java.net.URI;
@@ -41,6 +47,8 @@ public class OAuth2ClientConfig {
 
     @Value("${rpalace.user-agent}")
     private String userAgent;
+    @Value("${rpalace.reddit.api-base-uri}")
+    private String apiBaseUriForReddit;
 
     private ClientRegistrationRepository clientRegistrationRepository;
 
@@ -49,10 +57,24 @@ public class OAuth2ClientConfig {
     }
 
     @Bean
-    public WebClient webClient(OAuth2AuthorizedClientManager authorizedClientManager) {
+    public WebClient webClientForReddit(OAuth2AuthorizedClientManager authorizedClientManager) {
         ServletOAuth2AuthorizedClientExchangeFilterFunction oauth2ClientExchangeFilterFunction =
                 new ServletOAuth2AuthorizedClientExchangeFilterFunction(authorizedClientManager);
+
+        ObjectMapper objectMapper = new ObjectMapper();
+        objectMapper.setPropertyNamingStrategy(PropertyNamingStrategy.SNAKE_CASE);
+        objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+
+        ExchangeStrategies exchangeStrategies = ExchangeStrategies.builder()
+                .codecs(clientCodecConfigurer -> {
+                    clientCodecConfigurer.defaultCodecs().jackson2JsonEncoder(new Jackson2JsonEncoder(objectMapper));
+                    clientCodecConfigurer.defaultCodecs().jackson2JsonDecoder(new Jackson2JsonDecoder(objectMapper));
+                }).build();
+
         return WebClient.builder()
+                .defaultHeader(HttpHeaders.USER_AGENT, userAgent)
+                .baseUrl(apiBaseUriForReddit)
+                .exchangeStrategies(exchangeStrategies)
                 .apply(oauth2ClientExchangeFilterFunction.oauth2Configuration())
                 .build();
     }

@@ -39,7 +39,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                             "/auth/client/register", "/oauth2/callback")
                     .permitAll()
                     .antMatchers("/oauth2/authorization/reddit")
-                    .access("not( hasAuthority('scope_REDDIT') ) and isAuthenticated()")
+                    .access("not( hasAuthority('SCOPE_reddit_client') ) and isAuthenticated()")
+                    .antMatchers("/api/v1/reddit/**")
+                    .hasAuthority("SCOPE_reddit_client")
                     .anyRequest()
                     .hasAuthority("SCOPE_user"))
             .oauth2Client(oauth2Client -> oauth2Client

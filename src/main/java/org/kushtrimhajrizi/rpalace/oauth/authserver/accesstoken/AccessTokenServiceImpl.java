@@ -64,7 +64,6 @@ public class AccessTokenServiceImpl implements AccessTokenService {
                 .issueTime(Calendar.getInstance().getTime())
                 .expirationTime(expirationCalendar.getTime())
                 .claim(JWTClaimParameter.AUTHORITIES.getParameterName(), formatAuthorities(user.getAuthorities()))
-                .claim(JWTClaimParameter.EMAIL.getParameterName(), user.getEmail())
                 .claim(JWTClaimParameter.VERSION.getParameterName(), user.getAccessTokenVersion().getVersion())
                 .build();
         JWSHeader jwsHeader = new JWSHeader(JWSAlgorithm.RS256);
